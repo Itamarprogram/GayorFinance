@@ -4,6 +4,7 @@ using System.Windows.Navigation;
 using GayorFinance.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows.Threading;
+using model;
 
 namespace GayorFinance
 {
@@ -49,8 +50,9 @@ namespace GayorFinance
             signUpPage.OnSignUpSuccess += NavigateToSignIn;
             MainFrame.NavigationService.Navigate(signUpPage);
         }
-        public void NavigateToStockPage(string symbol, ApiClient apiClient)
+        public void NavigateToStockPage(string symbol)
         {
+            var apiClient = _serviceProvider.GetRequiredService<ApiClient>();
 
             var stockPage = new StockPage(symbol, apiClient);
             MainFrame.NavigationService.Navigate(stockPage);
@@ -62,10 +64,16 @@ namespace GayorFinance
             // Create a new instance of LandingPage by injecting the ApiClient instance to its constructor
             MainFrame.NavigationService.Navigate(new LandingPage(apiClient));
         }
-        public void NavigateToPortfolioPage()
+        public void NavigateToUserPortfoliosPage()
         {
             var apiClient = _serviceProvider.GetRequiredService<ApiClient>();
-            MainFrame.NavigationService.Navigate(new PortfolioPage(apiClient));
+            MainFrame.NavigationService.Navigate(new UserPortfolios(apiClient));
+        }
+
+        public void NavigateTPortfolioPage(Portfolio selectedPortfolio)
+        {
+            var apiClient = _serviceProvider.GetRequiredService<ApiClient>();
+            MainFrame.NavigationService.Navigate(new PortfolioPage(apiClient, selectedPortfolio));
         }
     }
 }

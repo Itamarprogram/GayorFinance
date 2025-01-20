@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="FakesAssemblies\**" />
+    <EmbeddedResource Remove="FakesAssemblies\**" />
+    <None Remove="FakesAssemblies\**" />
+    <Page Remove="FakesAssemblies\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
     <PackageReference Include="MaterialDesignColors" Version="2.0.7" />
     <PackageReference Include="MaterialDesignThemes" Version="4.6.0" />
@@ -17,16 +24,24 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+    <PackageReference Include="Microsoft.QualityTools.Testing.Fakes" Version="17.5.0-beta.23060.1" />
     <PackageReference Include="OxyPlot.Core" Version="2.2.0" />
     <PackageReference Include="OxyPlot.Wpf" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="model">
-      <HintPath>..\..\MyServices\bin\Debug\net8.0-windows\model.dll</HintPath>
+      <HintPath>..\model\bin\Debug\net8.0-windows\model.dll</HintPath>
     </Reference>
     <Reference Include="MyServices">
-      <HintPath>..\..\MyServices\bin\Debug\net8.0-windows\MyServices.dll</HintPath>
+      <HintPath>..\ItamarFinanceServer\MyServices\bin\Debug\net8.0-windows\MyServices.dll</HintPath>
+    </Reference>
+    <Reference Include="ViewModel">
+      <HintPath>..\ItamarFinanceServer\MyServices\bin\Debug\net8.0-windows\ViewModel.dll</HintPath>
     </Reference>
   </ItemGroup>
 

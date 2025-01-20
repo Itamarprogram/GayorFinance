@@ -3,8 +3,21 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
-      xmlns:local="clr-namespace:GayorFinance.Controls"
       Title="PortfolioPage">
+
+    <Page.Resources>
+        <!-- Style for clickable TextBlock -->
+        <Style TargetType="TextBlock" x:Key="ClickableTextBlockStyle">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="TextDecorations" Value="Underline"/>
+                    <Setter Property="Foreground" Value="Blue"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
 
     <Grid Background="#FAFAFA" Margin="20">
         <Grid.RowDefinitions>
@@ -15,7 +28,11 @@
 
         <!-- Header -->
         <Grid Grid.Row="0">
-            <TextBlock Text="My Portfolio" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+            <StackPanel HorizontalAlignment="Center" Margin="0,0,0,20">
+                <TextBlock Text="{Binding PortfolioName}" FontSize="24" FontWeight="Bold"/>
+                <TextBlock x:Name="TotalValueText" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <TextBlock x:Name="TotalPercentChangeText" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+            </StackPanel>
             <Button Content="+ Investment" Width="150" Height="40" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,20,0" Click="OpenAddInvestmentDialog"/>
         </Grid>
 
@@ -52,17 +69,57 @@
             </StackPanel>
         </StackPanel>
 
-        <!-- Investments List -->
-        <StackPanel Grid.Row="3" Margin="10">
-            <TextBlock Text="Investments" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
-            <ItemsControl ItemsSource="{Binding Investments}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <local:InvestmentUserControl />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+        <StackPanel Grid.Row="2" Margin="10">
+            <TextBlock Text="Investments" FontSize="22" FontWeight="Bold" Margin="0,10,0,10"/>
+
+            <!-- Table Header -->
+            <Border Background="#007ACC" Padding="10" CornerRadius="5">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Symbol" FontSize="14" FontWeight="Bold" Foreground="White" Width="80"/>
+                    <TextBlock Text="Quantity" FontSize="14" FontWeight="Bold" Foreground="White" Width="60"/>
+                    <TextBlock Text="Purchase Price" FontSize="14" FontWeight="Bold" Foreground="White" Width="100"/>
+                    <TextBlock Text="Current Price" FontSize="14" FontWeight="Bold" Foreground="White" Width="100"/>
+                    <TextBlock Text="Total Value" FontSize="14" FontWeight="Bold" Foreground="White" Width="100"/>
+                    <TextBlock Text="Change ($)" FontSize="14" FontWeight="Bold" Foreground="White" Width="80"/>
+                    <TextBlock Text="Change (%)" FontSize="14" FontWeight="Bold" Foreground="White" Width="80"/>
+                    <TextBlock Text="Purchase Date" FontSize="14" FontWeight="Bold" Foreground="White" Width="120"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Scrollable Stock List with Fixed Height -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Height="200">
+                <ItemsControl x:Name="PortfolioStockListBinding" ItemsSource="{Binding Investments}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="12" Margin="5" CornerRadius="6" BorderBrush="#D0D0D0" BorderThickness="1" 
+                            Background="White" Effect="{DynamicResource MaterialDesignShadowDepth}">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                    <TextBlock Text="{Binding TickerSymbol}" FontSize="16" FontWeight="Bold" Width="80"/>
+                                    <TextBlock Text="{Binding Quantity}" Width="60"/>
+                                    <TextBlock Text="{Binding PurchasePrice, StringFormat=C}" Width="100"/>
+                                    <TextBlock Text="{Binding CurrentPrice, StringFormat=C}" Width="100"/>
+                                    <TextBlock Text="{Binding TotalValue, StringFormat=C}" Width="100"/>
+                                    <TextBlock Text="{Binding PriceChange, StringFormat=+0.00;-0.00;0.00}" 
+                                       Width="80" Foreground="{Binding PriceChangeColor}"/>
+                                    <TextBlock Text="{Binding PercentChange, StringFormat=+0.00\%;-0.00\%;0.00\%}" 
+                                       Width="80" Foreground="{Binding PercentChangeColor}"/>
+                                    <TextBlock Text="{Binding PurchaseDate, StringFormat=yyyy-MM-dd}" Width="120"/>
+
+                                    <!-- Sell Button -->
+                                    <Button Content="Sell" Width="90" Height="35"
+                                    Background="Red" Foreground="White" 
+                                    FontSize="14" FontWeight="Bold"
+                                    Cursor="Hand" BorderThickness="0"
+                                    Click="SellStock"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
         </StackPanel>
+
+
 
         <!-- Add Investment Dialog -->
         <materialDesign:DialogHost x:Name="AddInvestmentDialogHost" Background="#AAFFFFFF">

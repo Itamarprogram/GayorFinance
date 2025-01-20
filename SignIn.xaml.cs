@@ -38,6 +38,7 @@ namespace GayorFinance
             if (foundUser != null)
             {
                 MessageBox.Show("Successfully signed in!");
+                UserSession.Instance.SetUser(foundUser);  // Save the user globally
                 OnSignInSuccess?.Invoke();
             }
             else

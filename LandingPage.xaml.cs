@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using GayorFinance.Controls;
 using GayorFinance.Services;
 using model;
-
 namespace GayorFinance
 {
     public partial class LandingPage : Page
@@ -35,14 +33,14 @@ namespace GayorFinance
             else
             {
                 var mainWindow = (MainWindow)Application.Current.MainWindow;
-                mainWindow.NavigateToStockPage(searchText, _apiClient);
+                mainWindow.NavigateToStockPage(searchText);
             }
         }
 
         private void PortfolioClick(object sender, RoutedEventArgs e)
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;
-            mainWindow.NavigateToPortfolioPage();
+            mainWindow.NavigateToUserPortfoliosPage();
         }
     }
 }
