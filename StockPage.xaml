@@ -1,75 +1,170 @@
-﻿
-
-<Page x:Class="GayorFinance.StockPage"
+﻿<Page x:Class="GayorFinance.StockPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
       Title="StockPage">
 
-    <Grid Background="#FAFAFA" Margin="20">
+    <Grid Background="#FAFAFA">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!-- Header with stock information -->
-        <materialDesign:Card Grid.Row="0" Padding="15" Margin="0,0,0,20">
-            <StackPanel>
-                <TextBlock x:Name="CompanyName" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"
-                       Margin="0,0,0,5" TextAlignment="Center" />
-                <TextBlock x:Name="Symbol" FontSize="16" Foreground="Gray" Margin="0,0,0,10" TextAlignment="Center" />
-                <TextBlock x:Name="Price" FontSize="48" FontWeight="Bold" HorizontalAlignment="Center"
-                       Margin="0,0,0,10" TextAlignment="Center" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock x:Name="ChangePrecentage" FontSize="16" FontWeight="Bold" />
-                    <TextBlock x:Name="Change" FontSize="16" FontWeight="Bold" Margin="10,0,0,0" />
+        <materialDesign:Card Grid.Row="0" Margin="20,20,20,10" UniformCornerRadius="15">
+            <Grid Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left side - Stock Info -->
+                <StackPanel Grid.Column="0">
+                    <TextBlock x:Name="CompanyName" FontSize="28" FontWeight="SemiBold" 
+                             Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,5"/>
+                    <TextBlock x:Name="Symbol" FontSize="18" Foreground="{DynamicResource MaterialDesignBodyLight}" 
+                             Margin="0,0,0,15"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <TextBlock Text="Market Cap: " FontSize="14" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                        <TextBlock x:Name="MarketCap" FontSize="14" Foreground="{DynamicResource MaterialDesignBody}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Volume: " FontSize="14" Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                        <TextBlock x:Name="Volume" FontSize="14" Foreground="{DynamicResource MaterialDesignBody}"/>
+                    </StackPanel>
                 </StackPanel>
+
+                <!-- Right side - Price Info -->
+                <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                    <TextBlock x:Name="Price" FontSize="36" FontWeight="Bold" 
+                             HorizontalAlignment="Right" Margin="0,0,0,5"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock x:Name="ChangePrecentage" FontSize="16" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="Change" FontSize="16" FontWeight="SemiBold" Margin="10,0,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- Key Statistics Card -->
+        <materialDesign:Card Grid.Row="1" Margin="20,0,20,10" UniformCornerRadius="15">
+            <Grid Margin="20,15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 52 Week Range -->
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Day Range" FontSize="12" 
+                             Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                    <TextBlock x:Name="DayRange" FontSize="14" 
+                             Foreground="{DynamicResource MaterialDesignBody}"/>
+                </StackPanel>
+
+
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="52 Week Range" FontSize="12" 
+                             Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                    <TextBlock x:Name="FiftyTwoWeekRange" FontSize="14" 
+                             Foreground="{DynamicResource MaterialDesignBody}"/>
+                </StackPanel>
+
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="P/E Ratio" FontSize="12" 
+                             Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                    <TextBlock x:Name="PERatio" FontSize="14" 
+                             Foreground="{DynamicResource MaterialDesignBody}"/>
+                </StackPanel>
+
+                <!-- Beta -->
+                <StackPanel Grid.Column="3">
+                    <TextBlock Text="Earnings Announcement" FontSize="12" 
+                             Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                    <TextBlock x:Name="EarningsAnnouncement" FontSize="14" 
+                             Foreground="{DynamicResource MaterialDesignBody}"/>
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- Chart Section -->
+        <materialDesign:Card Grid.Row="2" Margin="20,0,20,10" UniformCornerRadius="15">
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Chart Header -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock x:Name="ChangeFromStart" FontSize="14" FontWeight="SemiBold" 
+                             VerticalAlignment="Center"/>
+
+                    <!-- Timeframe Buttons -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Content="1D" Margin="5,0" Style="{StaticResource MaterialDesignFlatButton}" Click="TimeframeButton_Click"/>
+                        <Button Content="5D" Margin="5,0" Style="{StaticResource MaterialDesignFlatButton}" Click="TimeframeButton_Click"/>
+                        <Button Content="YTD" Margin="5,0" Style="{StaticResource MaterialDesignFlatButton}" Click="TimeframeButton_Click"/>
+                        <Button Content="1Y" Margin="5,0" Style="{StaticResource MaterialDesignFlatButton}" Click="TimeframeButton_Click"/>
+                        <Button Content="5Y" Margin="5,0" Style="{StaticResource MaterialDesignFlatButton}" Click="TimeframeButton_Click"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Chart -->
+                <lvc:CartesianChart Grid.Row="2" x:Name="StockChart" Series="{Binding SeriesCollection}" 
+                                   DisableAnimations="True" Hoverable="True" DataTooltip="{x:Null}">
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Title="Date" Labels="{Binding Labels}" 
+                                 Foreground="{DynamicResource MaterialDesignBody}"/>
+                    </lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis Title="Price" LabelFormatter="{Binding YFormatter}" 
+                                 Foreground="{DynamicResource MaterialDesignBody}"/>
+                    </lvc:CartesianChart.AxisY>
+                </lvc:CartesianChart>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- News Section -->
+        <materialDesign:Card Grid.Row="3" Margin="20,0,20,20" UniformCornerRadius="15">
+            <StackPanel Margin="20">
+                <TextBlock Text="Latest News" FontSize="18" FontWeight="SemiBold" 
+                         Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,10"/>
+                <ItemsControl x:Name="NewsItems">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Date}" Margin="10,0,0,0" 
+                                         Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
         </materialDesign:Card>
 
-        <!-- Timeframe Buttons -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
-            <Button Content="5Y" Margin="5,0" Style="{StaticResource MaterialDesignFlatButton}" Click="TimeframeButton_Click"/>
-            <Button Content="1Y" Margin="5,0" Style="{StaticResource MaterialDesignFlatButton}" Click="TimeframeButton_Click"/>
-            <Button Content="YTD" Margin="5,0" Style="{StaticResource MaterialDesignFlatButton}" Click="TimeframeButton_Click"/>
-            <Button Content="5D" Margin="5,0" Style="{StaticResource MaterialDesignFlatButton}" Click="TimeframeButton_Click"/>
-            <Button Content="1D" Margin="5,0" Style="{StaticResource MaterialDesignFlatButton}" Click="TimeframeButton_Click"/>
-
-        </StackPanel>
-
-        <!-- Material Design Card for Graph -->
-        <materialDesign:Card Grid.Row="2" Margin="0,10,0,0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <TextBlock Text="Stock Prices" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryHueMidBrush}"
-                       Margin="10,10,10,0" HorizontalAlignment="Center" />
-                <TextBlock x:Name="ChangeFromStart" FontSize="14" FontWeight="Bold" Foreground="Black" />
-
-
-                <Border Grid.Row="1" BorderBrush="{DynamicResource PrimaryHueMidBrush}" BorderThickness="1" CornerRadius="10" Margin="10">
-                    <lvc:CartesianChart x:Name="StockChart" Series="{Binding SeriesCollection}" LegendLocation="Right">
-                        <lvc:CartesianChart.AxisX>
-                            <lvc:Axis Title="Date" Labels="{Binding Labels}" Separator="{Binding Separator}" />
-                        </lvc:CartesianChart.AxisX>
-                        <lvc:CartesianChart.AxisY>
-                            <lvc:Axis Title="Price" LabelFormatter="{Binding YFormatter}" />
-                        </lvc:CartesianChart.AxisY>
-                    </lvc:CartesianChart>
-                </Border>
-            </Grid>
-        </materialDesign:Card>
         <!-- Loading Overlay -->
-        <Grid x:Name="LoadingOverlay" Background="#AAFFFFFF" Visibility="Collapsed">
-            <TextBlock Text="Loading..." FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"
-                       Foreground="{DynamicResource PrimaryHueMidBrush}" FontWeight="Bold" />
+        <Grid x:Name="LoadingOverlay" Grid.RowSpan="4" Background="#AAFFFFFF" 
+              Visibility="Collapsed">
+            <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" 
+                        Value="0" IsIndeterminate="True" Width="50" Height="50"/>
         </Grid>
     </Grid>
-
 </Page>
-

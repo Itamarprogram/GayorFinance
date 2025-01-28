@@ -9,6 +9,10 @@ using MyServices;
 using System.Windows.Navigation;
 using System.Threading.Channels;
 using System.Text.RegularExpressions;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace GayorFinance
 {
@@ -19,12 +23,187 @@ namespace GayorFinance
         public Action OnSignUpSuccess { get; set; }
 
 
+        // Add new properties for enhanced features
+        private int _currentStep = 1;
+        public int CurrentStep
+        {
+            get => _currentStep;
+            set
+            {
+                _currentStep = value;
+                OnPropertyChanged();
+                UpdateStepVisibility();
+                UpdateNavigationButtons();
+            }
+        }
+
+        private int _passwordStrength;
+        public int PasswordStrength
+        {
+            get => _passwordStrength;
+            set
+            {
+                _passwordStrength = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(PasswordStrengthColor));
+            }
+        }
+
+        public Brush PasswordStrengthColor
+        {
+            get
+            {
+                return PasswordStrength switch
+                {
+                    <= 25 => new SolidColorBrush(Colors.Red),
+                    <= 50 => new SolidColorBrush(Colors.Orange),
+                    <= 75 => new SolidColorBrush(Colors.Yellow),
+                    _ => new SolidColorBrush(Colors.Green)
+                };
+            }
+        }
+
+        private bool _isPasswordVisible;
+        public bool IsPasswordVisible
+        {
+            get => _isPasswordVisible;
+            set
+            {
+                _isPasswordVisible = value;
+                OnPropertyChanged();
+                UpdatePasswordVisibility();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         public SignUpPage()
         {
             InitializeComponent();
             DataContext = this;
             CountryList = new ObservableCollection<Countries>();
             LoadCountriesAsync();
+            PasswordTextBox.PasswordChanged += (s, e) => UpdatePasswordStrength();
+            VisiblePasswordBox.TextChanged += (s, e) => UpdatePasswordStrength();
+        }
+
+        private void UpdatePasswordVisibility()
+        {
+            if (IsPasswordVisible)
+            {
+                VisiblePasswordBox.Text = PasswordTextBox.Password;
+                VisiblePasswordBox.Visibility = Visibility.Visible;
+                PasswordTextBox.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                PasswordTextBox.Password = VisiblePasswordBox.Text;
+                VisiblePasswordBox.Visibility = Visibility.Collapsed;
+                PasswordTextBox.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void UpdatePasswordStrength()
+        {
+            string password = IsPasswordVisible ? VisiblePasswordBox.Text : PasswordTextBox.Password;
+
+            int strength = 0;
+            if (password.Length >= 8) strength += 25;
+            if (Regex.IsMatch(password, "[A-Z]")) strength += 25;
+            if (Regex.IsMatch(password, "[a-z]")) strength += 25;
+            if (Regex.IsMatch(password, "[0-9!@#$%^&*(),.?\"{}|<>]")) strength += 25;
+
+            PasswordStrength = strength;
+        }
+
+
+
+        private void UpdateStepVisibility()
+        {
+            Step1Panel.Visibility = CurrentStep == 1 ? Visibility.Visible : Visibility.Collapsed;
+            Step2Panel.Visibility = CurrentStep == 2 ? Visibility.Visible : Visibility.Collapsed;
+            Step3Panel.Visibility = CurrentStep == 3 ? Visibility.Visible : Visibility.Collapsed;
+            Step4Panel.Visibility = CurrentStep == 4 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void UpdateNavigationButtons()
+        {
+            NextButton.Content = CurrentStep == 4 ? "Sign Up" : "Next";
+        }
+
+        private bool ValidateCurrentStep()
+        {
+            switch (CurrentStep)
+            {
+                case 1:
+                    return !string.IsNullOrWhiteSpace(FirstNameTextBox.Text) &&
+                           !string.IsNullOrWhiteSpace(LastNameTextBox.Text);
+                case 2:
+                    return !string.IsNullOrWhiteSpace(EmailTextBox.Text) &&
+                           IsValidEmail(EmailTextBox.Text);
+                case 3:
+                    return PasswordStrength >= 75;
+                case 4:
+                    return DateOfBirthPicker.SelectedDate.HasValue &&
+                           CountryComboBox.SelectedItem != null;
+                default:
+                    return false;
+            }
+        }
+
+        private void NextStep_Click(object sender, RoutedEventArgs e)
+        {
+            if (ValidateCurrentStep())
+            {
+                if (CurrentStep < 4)
+                {
+                    CurrentStep++;
+                }
+                else
+                {
+                    SignUpButton_Click(sender, e);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please complete all required fields correctly before proceeding.");
+            }
+        }
+
+        private void PreviousStep_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentStep > 1)
+            {
+                CurrentStep--;
+            }
+        }
+
+        private void TogglePasswordVisibility_Click(object sender, RoutedEventArgs e)
+        {
+            IsPasswordVisible = !IsPasswordVisible;
+        }
+
+        private async void ShowSuccessAnimation()
+        {
+            SuccessIcon.Visibility = Visibility.Visible;
+            var scaleAnimation = new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = TimeSpan.FromSeconds(0.5),
+                EasingFunction = new ElasticEase { EasingMode = EasingMode.EaseOut }
+            };
+            SuccessIcon.RenderTransform = new ScaleTransform();
+            SuccessIcon.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, scaleAnimation);
+            SuccessIcon.RenderTransform.BeginAnimation(ScaleTransform.ScaleYProperty, scaleAnimation);
+
+            await Task.Delay(2000);
+            OnSignUpSuccess?.Invoke();
         }
 
         private async void LoadCountriesAsync()
@@ -87,7 +266,7 @@ namespace GayorFinance
                     MessageBox.Show("Please fill in all fields.");
                     return;
                 }
-                if(await CheckForEmailDuplicate())
+                if(await CheckForEmailDuplicate(EmailTextBox.Text))
                 {
                     MessageBox.Show("Email already exists!");
                     return;
@@ -129,7 +308,7 @@ namespace GayorFinance
         }
 
         // Helper method to validate email
-        private bool IsValidEmail(string email)
+        public bool IsValidEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
                 return false;
@@ -138,7 +317,7 @@ namespace GayorFinance
             string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
             return Regex.IsMatch(email, emailPattern);
         }
-        private bool IsValidPassword(string password)
+        public bool IsValidPassword(string password)
         {
             if (string.IsNullOrWhiteSpace(password))
                 return false;
@@ -148,13 +327,13 @@ namespace GayorFinance
             return Regex.IsMatch(password, passwordPattern);
         }
 
-        private async Task<bool> CheckForEmailDuplicate()
+        public async Task<bool> CheckForEmailDuplicate(String EmailTextBox)
         {
             try
             {
                 ApiService apiService = new ApiService();
                 UserList users = await apiService.GetUsers();
-                User? foundUser = users.Find(users => users.Email == EmailTextBox.Text);
+                User? foundUser = users.Find(users => users.Email == EmailTextBox);
                 if (foundUser != null)
                 {
                     return true;

@@ -5,110 +5,104 @@
       FontFamily="Segoe UI"
       FontSize="14"
       Title="Sign Up">
+    <Grid Background="#F0F2F5">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="-307,0,-1925,-4760">
+            <Border Background="White" VerticalAlignment="Center" CornerRadius="16" Padding="50" Margin="16,32"
+                    BorderBrush="#E0E0E0" BorderThickness="1" >
+                <Grid>
+                    <!-- Success Animation -->
+                    <materialDesign:PackIcon x:Name="SuccessIcon" Kind="CheckCircle" 
+                                           Width="100" Height="100" Foreground="#4CAF50"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Visibility="Collapsed"/>
 
-    <Grid Background="#FAFAFA">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Border Background="White" VerticalAlignment="Center" 
-                    CornerRadius="12" Padding="40" Margin="16,32"
-                    BorderBrush="#EDEDED" BorderThickness="1">
-                <StackPanel>
-                    <!-- Title -->
-                    <TextBlock Text="Create Account" FontSize="28" FontWeight="SemiBold" 
-                               HorizontalAlignment="Center" Margin="0,0,0,32" Foreground="#2E2E2E"/>
+                    <StackPanel>
+                        <!-- Title -->
+                        <TextBlock Text="Create Your Account" FontSize="30" FontWeight="Bold" 
+                                 HorizontalAlignment="Center" Margin="0,0,0,32" Foreground="#333333"/>
 
-                    <!-- First Name -->
-                    <Grid Margin="0,0,0,20">
-                        <TextBox x:Name="FirstNameTextBox" materialDesign:HintAssist.Hint="First Name" Height="48"
-                                 Background="#F5F5F5" Padding="10" materialDesign:TextFieldAssist.DecorationVisibility="Hidden"/>
-                    </Grid>
+                        <!-- Stepper Progress -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,32">
+                            <ProgressBar Width="50" Height="4" Margin="4" Value="{Binding CurrentStep}" Maximum="1"/>
+                            <ProgressBar Width="50" Height="4" Margin="4" Value="{Binding CurrentStep}" Maximum="2"/>
+                            <ProgressBar Width="50" Height="4" Margin="4" Value="{Binding CurrentStep}" Maximum="3"/>
+                            <ProgressBar Width="50" Height="4" Margin="4" Value="{Binding CurrentStep}" Maximum="4"/>
+                        </StackPanel>
 
-                    <!-- Last Name -->
-                    <Grid Margin="0,0,0,20">
-                        <TextBox x:Name="LastNameTextBox" materialDesign:HintAssist.Hint="Last Name" Height="48"
-                                 Background="#F5F5F5" Padding="10" materialDesign:TextFieldAssist.DecorationVisibility="Hidden"/>
-                    </Grid>
+                        <!-- Step 1: Basic Information -->
+                        <StackPanel x:Name="Step1Panel">
+                            <TextBox x:Name="FirstNameTextBox" materialDesign:HintAssist.Hint="First Name" Height="60"
+                                   Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,8"/>
+                            <TextBox x:Name="LastNameTextBox" materialDesign:HintAssist.Hint="Last Name" Height="60"
+                                   Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,8"/>
+                        </StackPanel>
 
-                    <!-- Email -->
-                    <Grid Margin="0,0,0,20">
-                        <TextBox x:Name="EmailTextBox" materialDesign:HintAssist.Hint="Email Address" Height="48"
-                                 Background="#F5F5F5" Padding="10" materialDesign:TextFieldAssist.DecorationVisibility="Hidden"/>
-                    </Grid>
+                        <!-- Step 2: Email -->
+                        <StackPanel x:Name="Step2Panel" Visibility="Collapsed">
+                            <TextBox x:Name="EmailTextBox" materialDesign:HintAssist.Hint="Email Address" Height="60"
+                                   Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,8"/>
+                        </StackPanel>
 
-                    <!-- Password -->
-                    <Grid Margin="0,0,0,20">
-                        <PasswordBox x:Name="PasswordTextBox" materialDesign:HintAssist.Hint="Password" Height="48"
-                                     Background="#F5F5F5" Padding="10" materialDesign:TextFieldAssist.DecorationVisibility="Hidden"/>
-                    </Grid>
+                        <!-- Step 3: Password -->
+                        <StackPanel x:Name="Step3Panel" Visibility="Collapsed">
+                            <Grid>
+                                <PasswordBox x:Name="PasswordTextBox" materialDesign:HintAssist.Hint="Password" Height="60"
+                                           Style="{StaticResource MaterialDesignOutlinedPasswordBox}"/>
+                                <TextBox x:Name="VisiblePasswordBox" materialDesign:HintAssist.Hint="Password" Height="60"
+                                       Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                       Visibility="Collapsed"/>
+                                <Button HorizontalAlignment="Right" Margin="0,0,10,0" 
+                                      Style="{StaticResource MaterialDesignIconButton}"
+                                      Click="TogglePasswordVisibility_Click">
+                                    <materialDesign:PackIcon Kind="Eye"/>
+                                </Button>
+                            </Grid>
+                            <!-- Password Strength Indicator -->
+                            <ProgressBar Height="4" Margin="0,8" Maximum="100" 
+                                       Value="{Binding PasswordStrength}"
+                                       Foreground="{Binding PasswordStrengthColor}"/>
+                            <TextBlock Text="{Binding PasswordStrength, StringFormat=Password Strength: {0}%}"
+                                     Foreground="{Binding PasswordStrengthColor}" Margin="0,4"/>
+                        </StackPanel>
 
-                    <!-- Date of Birth -->
-                    <Grid Margin="0,0,0,20">
-                        <DatePicker x:Name="DateOfBirthPicker" materialDesign:HintAssist.Hint="Date of Birth" Height="48"
-                                    Background="#F5F5F5" Padding="10" materialDesign:TextFieldAssist.DecorationVisibility="Hidden"/>
-                    </Grid>
+                        <!-- Step 4: Additional Information -->
+                        <StackPanel x:Name="Step4Panel" Visibility="Collapsed">
+                            <DatePicker x:Name="DateOfBirthPicker" materialDesign:HintAssist.Hint="Date of Birth" Height="50"
+                                      Style="{StaticResource MaterialDesignOutlinedDatePicker}" Margin="0,8"/>
+                            <ComboBox x:Name="CountryComboBox" materialDesign:HintAssist.Hint="Select Country" 
+                                    ItemsSource="{Binding CountryList}" DisplayMemberPath="CountryName" 
+                                    SelectedValuePath="CountryName" Height="50"
+                                    Style="{StaticResource MaterialDesignOutlinedComboBox}" Margin="0,8"/>
+                        </StackPanel>
 
-                    <!-- Country -->
-                    <Grid Margin="0,0,0,20">
-                        <ComboBox x:Name="CountryComboBox"
-                                  materialDesign:HintAssist.Hint="Select Country"
-                                  ItemsSource="{Binding CountryList}"
-                                  DisplayMemberPath="CountryName"
-                                  SelectedValuePath="CountryName"
-                                  SelectedItem="{Binding SelectedCountry}"
-                                  Height="48" Padding="10" materialDesign:TextFieldAssist.DecorationVisibility="Hidden"/>
-                    </Grid>
+                        <!-- Navigation Buttons -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20">
+                            <Button Content="Previous" Height="40" Width="100" Margin="8"
+                                    Click="PreviousStep_Click" Style="{StaticResource MaterialDesignOutlinedButton}"/>
+                            <Button x:Name="NextButton" Height="40" Width="100" Margin="8" 
+                                    Click="NextStep_Click" Content="Next"
+                                    Style="{StaticResource MaterialDesignRaisedButton}">
+                                <Button.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#4CAF50" Offset="0"/>
+                                        <GradientStop Color="#45A045" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                            </Button>
+                        </StackPanel>
 
-                    <!-- Sign-Up Button -->
-                    <Button Content="Sign Up" Height="48" Margin="0,0,0,16" Click="SignUpButton_Click">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="#4CAF50"/>
-                                <Setter Property="Foreground" Value="White"/>
-                                <Setter Property="FontSize" Value="16"/>
-                                <Setter Property="FontWeight" Value="Bold"/>
-                                <Setter Property="BorderThickness" Value="0"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="24">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#45A045"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                        <!-- Sign Up Button (Only visible on last step) -->
 
-                    <!-- Go to Sign In -->
-                    <Button Content="Already have an account? Sign In" Height="48" Click="GoToSignInButton_Click">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="Foreground" Value="#2E7D32"/>
-                                <Setter Property="FontSize" Value="14"/>
-                                <Setter Property="FontWeight" Value="SemiBold"/>
-                                <Setter Property="BorderThickness" Value="0"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Foreground" Value="#1B5E20"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                </StackPanel>
+
+                        <!-- Already have an account? -->
+                        <TextBlock HorizontalAlignment="Center" FontSize="14" Foreground="#757575">
+                            <Run Text="Already have an account? "/>
+                            <Hyperlink Click="GoToSignInButton_Click" Foreground="#2E7D32" FontWeight="SemiBold">
+                                Sign In
+                            </Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
             </Border>
         </ScrollViewer>
     </Grid>

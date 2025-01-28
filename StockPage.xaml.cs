@@ -142,7 +142,7 @@ namespace GayorFinance
                         }
 
                         break;
-                    case "1D":
+                    case "1D":  
 
                         if (_cachedOneDayData == null)
                         {
@@ -215,6 +215,12 @@ namespace GayorFinance
             Price.Text = $"${quote.Price:F2}";
             ChangePrecentage.Text = $"{quote.ChangesPercentage / 100:+0.00%;-0.00%;0.00%}";
             Change.Text = $"{quote.Change:+0.00;-0.00;0.00}";
+            MarketCap.Text = $"{quote.MarketCap:C0}";
+            Volume.Text = $"{quote.Volume:N0}";
+            DayRange.Text = $"{quote.DayLow:F2} - {quote.DayHigh:F2}";
+            FiftyTwoWeekRange.Text = $"{quote.YearLow:F2} - {quote.YearHigh:F2}";
+            PERatio.Text = $"{quote.Pe:F2}";
+            EarningsAnnouncement.Text = $"{DateTime.Parse(quote.EarningsAnnouncement):MMMM dd, yyyy}";
             ChangePrecentage.Foreground = quote.ChangesPercentage >= 0 ? Brushes.Green : Brushes.Red;
             Change.Foreground = quote.Change >= 0 ? Brushes.Green : Brushes.Red;
             if (_currentStockQuote != null)

@@ -101,20 +101,20 @@ namespace GayorFinance.Services
                 throw new Exception($"An unknown error occurred with message {ex.Message}", ex);
             }
         }
-        public async Task<HistoricalDataResponse> GetStockQuoteHistoricalDataFromADate(string symbol, string date)
+        public async Task<HistoricalDataResponse> GetStockQuoteHistoricalDataFromADate(string symbol, string StartDate, string EndDate)
         {
 
             try
             {
                 // The call to our API that will return the historical stock data based on our specified symbol
-                HttpResponseMessage response = await _httpClient.GetAsync($"/api/Finance/GetStockQuoteHistoricalFromADate/stock/quote/ADate/{symbol}/{date}");
+                HttpResponseMessage response = await _httpClient.GetAsync($"/api/Finance/GetStockQuoteHistoricalFromADate/stock/quote/ADate/{symbol}/{StartDate}/{EndDate}");
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadFromJsonAsync<HistoricalDataResponse>();
             }
             catch (HttpRequestException ex)
             {
                 // Handle communication errors (e.g., server not found, timeout)
-                throw new HttpRequestException($"Error connecting to server: {ex.Message}", ex);
+             throw new HttpRequestException($"Error connecting to server: {ex.Message}", ex);
             }
             catch (Exception ex)
             {

@@ -75,5 +75,10 @@ namespace GayorFinance
             var apiClient = _serviceProvider.GetRequiredService<ApiClient>();
             MainFrame.NavigationService.Navigate(new PortfolioPage(apiClient, selectedPortfolio));
         }
+
+        public void NavigateToSettingsPage()
+        {
+            MainFrame.NavigationService.Navigate(new Settings());
+        }
     }
 }

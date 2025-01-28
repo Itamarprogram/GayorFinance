@@ -15,12 +15,15 @@ namespace GayorFinance
     {
         public User currentUser;
         private readonly ApiClient _apiClient;
+        private double TotalAllPortfoliosValue { get; set; }
+        private double TotalAllPortfoliosChangePercent { get; set; }
 
         public UserPortfolios(ApiClient apiClient)
         {
             InitializeComponent();
             currentUser = UserSession.Instance.CurrentUser;
             _apiClient = apiClient;
+
             LoadPortfolios();
         }
 
@@ -30,13 +33,51 @@ namespace GayorFinance
             {
                 ApiService apiService = new ApiService();
                 List<Portfolio> portfolios = await FindAllPortfoliosByUserId(currentUser.Id);
-                PortfolioList.ItemsSource = portfolios;
+                List<PortfolioDisplay> displayPortfolios = new List<PortfolioDisplay>();
+
+                decimal totalInitialValue = 0;
+                TotalAllPortfoliosValue = 0;
+                TotalAllPortfoliosChangePercent = 0;
+
+                foreach (var portfolio in portfolios)
+                {
+                    List<PortfolioStocks> stocks = await apiService.GetPortfoliosStocks();
+                    stocks = stocks.Where(s => s.PortfolioId == portfolio.Id).ToList();
+
+                    decimal initialValue = stocks.Sum(s => s.Quantity * s.PurchasePrice);
+                    decimal TotalCurrentValue = portfolio.TotalValue;
+                    decimal TotalPercentChange = TotalCurrentValue > 0 ? ((TotalCurrentValue - initialValue) / initialValue) : 0;
+
+                    var portfolioDisplay = PortfolioDisplay.FromPortfolio(portfolio, (double)TotalCurrentValue, (double)TotalPercentChange, (double)initialValue);
+                    displayPortfolios.Add(portfolioDisplay);
+
+                    totalInitialValue += initialValue;
+                    TotalAllPortfoliosValue += portfolio.TotalValue;
+                }
+
+                decimal totalPercentChange = totalInitialValue > 0
+                    ? (decimal)(TotalAllPortfoliosValue - (double)totalInitialValue) / totalInitialValue
+                    : 0;
+
+                // Bind values to UI
+                DisplayPortfolios.ItemsSource = displayPortfolios;
+                TotalAllPortfoliosValueTxt.Text = $"{TotalAllPortfoliosValue:C}";
+                TotalAllPortfoliosValueTxt.Foreground = (decimal)TotalAllPortfoliosValue >= totalInitialValue
+                    ? System.Windows.Media.Brushes.Green
+                    : System.Windows.Media.Brushes.Red;
+
+                TotalAllPortfoliosChangePercentTxt.Text = $"{totalPercentChange:P2}";
+                TotalAllPortfoliosChangePercentTxt.Foreground = totalPercentChange >= 0
+                    ? System.Windows.Media.Brushes.Green
+                    : System.Windows.Media.Brushes.Red;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error loading portfolios: " + ex.Message);
             }
         }
+
+
 
         private async Task<List<Portfolio>> FindAllPortfoliosByUserId(int userId)
         {
@@ -55,16 +96,17 @@ namespace GayorFinance
 
         private async void DeletePortfolio_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is Portfolio portfolio)
+            if (sender is Button button && button.DataContext is PortfolioDisplay portfolioDisplay)
             {
                 try
                 {
                     ApiService apiService = new ApiService();
-                    int isDeleted = await apiService.DeletePortfolio(portfolio.Id);
+                    int isDeleted = await apiService.DeletePortfolio(portfolioDisplay.OriginalPortoflio.Id);  
+
                     if (isDeleted == 1)
                     {
                         MessageBox.Show("Portfolio deleted successfully.");
-                        LoadPortfolios();
+                        LoadPortfolios();  // Reload the portfolios after deletion
                     }
                     else
                     {
@@ -77,6 +119,7 @@ namespace GayorFinance
                 }
             }
         }
+
 
 
 
@@ -123,12 +166,13 @@ namespace GayorFinance
 
         private void AccessPortfolio_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is Portfolio selectedPortfolio)
+            if (sender is Button button && button.DataContext is PortfolioDisplay portfolioDisplay)
             {
                 var mainWindow = (MainWindow)Application.Current.MainWindow;
-                mainWindow.NavigateTPortfolioPage(selectedPortfolio);
+                mainWindow.NavigateTPortfolioPage(portfolioDisplay.OriginalPortoflio);
             }
         }
+
 
     }
 }

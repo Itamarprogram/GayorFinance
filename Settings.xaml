@@ -1,0 +1,168 @@
+﻿<Page x:Class="GayorFinance.Settings"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      Title="Settings">
+
+    <ScrollViewer>
+        <Grid Background="{DynamicResource MaterialDesignPaper}" MaxWidth="800">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <materialDesign:Card Grid.Row="0" Margin="20,20,20,0" UniformCornerRadius="15">
+                <Grid Margin="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Profile Picture -->
+
+
+                    <!-- User Info -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock x:Name="NameDisplay" Text="John Doe" 
+                                 FontSize="24" FontWeight="Bold"/>
+                        <TextBlock x:Name="UserEmailDisplay" Text="john.doe@example.com" 
+                                 FontSize="14" Opacity="0.6"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:Card>
+
+            <!-- Settings Sections -->
+            <StackPanel Grid.Row="1" Margin="20">
+                <!-- Personal Information -->
+                <materialDesign:Card Margin="0,0,0,20" UniformCornerRadius="15">
+                    <StackPanel Margin="20">
+                        <TextBlock Text="Personal Information" 
+                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                 Margin="0,0,0,20"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBox x:Name="FirstNameTextBox"
+                                    materialDesign:HintAssist.Hint="First Name"
+                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                    Margin="0,0,10,15"/>
+
+                            <TextBox x:Name="LastNameTextBox"
+                                    Grid.Column="1"
+                                    materialDesign:HintAssist.Hint="Last Name"
+                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                    Margin="10,0,0,15"/>
+                        </Grid>
+
+                        <TextBox x:Name="EmailTextBox"
+                                materialDesign:HintAssist.Hint="Email"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                Margin="0,0,0,15"/>
+
+                        <DatePicker x:Name="DateOfBirthPicker"
+                                  materialDesign:HintAssist.Hint="Date of Birth"
+                                  Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                  Margin="0,0,0,15"/>
+
+                        <ComboBox x:Name="CountryComboBox"
+                                 materialDesign:HintAssist.Hint="Country"
+                                 Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                 ItemsSource="{Binding CountryList}"
+                                 DisplayMemberPath="CountryName"
+                                 Margin="0,0,0,15"/>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- Security Settings -->
+                <materialDesign:Card Margin="0,0,0,20" UniformCornerRadius="15">
+                    <StackPanel Margin="20">
+                        <TextBlock Text="Security" 
+                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                 Margin="0,0,0,20"/>
+
+                        <PasswordBox x:Name="CurrentPasswordBox"
+                                   materialDesign:HintAssist.Hint="Current Password"
+                                   Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                                   Margin="0,0,0,15"/>
+
+                        <PasswordBox x:Name="NewPasswordBox"
+                                   materialDesign:HintAssist.Hint="New Password"
+                                   Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                                   Margin="0,0,0,15"/>
+
+                        <PasswordBox x:Name="ConfirmPasswordBox"
+                                   materialDesign:HintAssist.Hint="Confirm New Password"
+                                   Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                                   Margin="0,0,0,15"/>
+
+
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- Preferences -->
+                <materialDesign:Card Margin="0,0,0,20" UniformCornerRadius="15">
+                    <StackPanel Margin="20">
+                        <TextBlock Text="Preferences" 
+                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                 Margin="0,0,0,20"/>
+
+                        <ComboBox x:Name="ThemeComboBox"
+                                 materialDesign:HintAssist.Hint="Theme"
+                                 Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                 Margin="0,0,0,15">
+                            <ComboBoxItem Content="Light"/>
+                            <ComboBoxItem Content="Dark"/>
+                            <ComboBoxItem Content="System Default"/>
+                        </ComboBox>
+
+                        <ComboBox x:Name="CurrencyComboBox"
+                                 materialDesign:HintAssist.Hint="Preferred Currency"
+                                 Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                 Margin="0,0,0,15"/>
+
+                        <CheckBox Content="Enable Email Notifications"
+                                 x:Name="EmailNotificationsCheckBox"
+                                 Style="{StaticResource MaterialDesignCheckBox}"
+                                 Margin="0,0,0,10"/>
+
+                        <CheckBox Content="Enable Push Notifications"
+                                 x:Name="PushNotificationsCheckBox"
+                                 Style="{StaticResource MaterialDesignCheckBox}"/>
+                    </StackPanel>
+                </materialDesign:Card>
+
+                <!-- Action Buttons -->
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Content="Delete Account"
+                            Click="DeleteAccount_Click"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Foreground="Red"
+                            BorderBrush="Red"/>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Content="Save Changes"
+                                Click="SaveSettings_Click"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Margin="0,0,10,0"/>
+
+                        <Button Content="Logout"
+                                Click="Logout_Click"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Foreground="Red"
+                            BorderBrush="Red"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

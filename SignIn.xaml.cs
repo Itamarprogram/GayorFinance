@@ -45,6 +45,11 @@ namespace GayorFinance
             {
                 MessageBox.Show("User has not been found!");
             }
-        }   
+        }
+
+        private void TogglePasswordVisibility_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
