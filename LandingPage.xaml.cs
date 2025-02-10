@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using GayorFinance.Services;
 using model;
 using MyServices;
+
 namespace GayorFinance
 {
     public partial class LandingPage : Page
@@ -22,29 +23,38 @@ namespace GayorFinance
 
         List<String> Chosen_stocks = new List<string> { "AAPL", "GOOGL", "AMZN", "MSFT", "TSLA", "NVDA", "META", "CRWD", "NET", "PANW", "AVGO", "JPM", "WMT", "ORCL", "DIS", "MS", "V", "NFLX" };
 
-
         public LandingPage(ApiClient apiClient)
         {
             InitializeComponent();
+            InitializeEventHandlers();
             currentUser = UserSession.Instance.CurrentUser;
-
             _apiClient = apiClient;
             DataContext = this;
             LoadPortfolios();
             LoadMarketOverview();
-            //LoadAllStocks();
+        }
+
+        private void InitializeEventHandlers()
+        {
+            MarketOverviewList.PreviewMouseLeftButtonUp += MarketOverviewList_PreviewMouseLeftButtonUp;
+            SearchTextBox.KeyDown += SearchTextBox_KeyDown;
         }
 
         private async void LoadMarketOverview()
         {
             try
             {
-                ObservableCollection<StockQuote> stockQuotes = new ObservableCollection<StockQuote>();
+                var stockQuotes = new ObservableCollection<StockQuote>();
 
-                // Get stock data for each chosen stock
-                foreach (var symbol in Chosen_stocks)
+                // Create tasks for all API calls
+                var tasks = Chosen_stocks.Select(symbol => _apiClient.GetStockQuote(symbol));
+
+                // Wait for all tasks to complete
+                var results = await Task.WhenAll(tasks);
+
+                // Add results to the collection
+                foreach (var stock in results.Where(s => s != null))
                 {
-                    var stock = await _apiClient.GetStockQuote(symbol); // Await the task to get the StockQuote
                     stockQuotes.Add(stock);
                 }
 
@@ -56,8 +66,6 @@ namespace GayorFinance
             }
         }
 
-    
-
         private async void LoadPortfolios()
         {
             try
@@ -67,8 +75,7 @@ namespace GayorFinance
                 List<PortfolioDisplay> displayPortfolios = new List<PortfolioDisplay>();
 
                 decimal totalInitialValue = 0;
-                TotalAllPortfoliosValue = 0;
-                TotalAllPortfoliosChangePercent = 0;
+                decimal totalCurrentValue = 0;
 
                 foreach (var portfolio in portfolios)
                 {
@@ -76,31 +83,39 @@ namespace GayorFinance
                     stocks = stocks.Where(s => s.PortfolioId == portfolio.Id).ToList();
 
                     decimal initialValue = stocks.Sum(s => s.Quantity * s.PurchasePrice);
-                    decimal TotalCurrentValue = portfolio.TotalValue;
-                    decimal TotalPercentChange = TotalCurrentValue > 0 ? ((TotalCurrentValue - initialValue) / initialValue) : 0;
+                    decimal currentValue = portfolio.TotalValue;
 
-                    var portfolioDisplay = PortfolioDisplay.FromPortfolio(portfolio, (double)TotalCurrentValue, (double)TotalPercentChange, (double)initialValue);
+                    // Calculate percentage change correctly
+                    decimal percentChange = initialValue != 0
+                        ? ((currentValue - initialValue) / initialValue) * 100
+                        : 0;
+
+                    var portfolioDisplay = PortfolioDisplay.FromPortfolio(
+                        portfolio,
+                        (double)currentValue,
+                        (double)percentChange,
+                        (double)initialValue
+                    );
+
                     displayPortfolios.Add(portfolioDisplay);
-
                     totalInitialValue += initialValue;
-                    TotalAllPortfoliosValue += portfolio.TotalValue;
+                    totalCurrentValue += currentValue;
                 }
 
-                decimal totalPercentChange = totalInitialValue > 0
-                    ? (decimal)(TotalAllPortfoliosValue - (double)totalInitialValue) / totalInitialValue
+                // Calculate total percentage change
+                decimal totalPercentChange = totalInitialValue != 0
+                    ? ((totalCurrentValue - totalInitialValue) / totalInitialValue) * 100
                     : 0;
 
-                // Bind values to UI
                 DisplayPortfolios.ItemsSource = displayPortfolios;
-                TotalAllPortfoliosValueTxt.Text = $"Total Value: {TotalAllPortfoliosValue:C}";
-                TotalAllPortfoliosValueTxt.Foreground = (decimal)TotalAllPortfoliosValue >= totalInitialValue
-                    ? System.Windows.Media.Brushes.Green
-                    : System.Windows.Media.Brushes.Red;
+                TotalAllPortfoliosValueTxt.Text = $"Total Value: {totalCurrentValue:C}";
+                TotalAllPortfoliosChangePercentTxt.Text = $"Total Change: {totalPercentChange:+0.00;-0.00}%";
 
-                TotalAllPortfoliosChangePercentTxt.Text = $"Total Percentage Change: {totalPercentChange:P2}";
-                TotalAllPortfoliosChangePercentTxt.Foreground = totalPercentChange >= 0
-                    ? System.Windows.Media.Brushes.Green
-                    : System.Windows.Media.Brushes.Red;
+                // Set colors based on performance
+                TotalAllPortfoliosValueTxt.Foreground = totalCurrentValue >= totalInitialValue ?
+                    new SolidColorBrush(Colors.ForestGreen) : new SolidColorBrush(Colors.Crimson);
+                TotalAllPortfoliosChangePercentTxt.Foreground = totalPercentChange >= 0 ?
+                    new SolidColorBrush(Colors.ForestGreen) : new SolidColorBrush(Colors.Crimson);
             }
             catch (Exception ex)
             {
@@ -122,43 +137,90 @@ namespace GayorFinance
                 return new List<Portfolio>();
             }
         }
+
+        private void MarketOverviewList_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var element = e.OriginalSource as FrameworkElement;
+            while (element != null)
+            {
+                if (element.DataContext is StockQuote selectedStock)
+                {
+                    var mainWindow = (MainWindow)Application.Current.MainWindow;
+                    mainWindow.NavigateToStockPage(selectedStock.Symbol);
+                    break;
+                }
+                element = VisualTreeHelper.GetParent(element) as FrameworkElement;
+            }
+        }
+
+        private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                SearchButton_Click(sender, new RoutedEventArgs());
+            }
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            string searchText = SearchTextBox.Text?.Trim();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+                mainWindow.NavigateToStockPage(searchText.ToUpper());
+            }
+        }
+
         private async void DeletePortfolio_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is PortfolioDisplay portfolioDisplay)
             {
-                try
-                {
-                    ApiService apiService = new ApiService();
-                    int isDeleted = await apiService.DeletePortfolio(portfolioDisplay.OriginalPortoflio.Id);
+                var result = MessageBox.Show("Are you sure you want to delete this portfolio?",
+                    "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-                    if (isDeleted == 1)
-                    {
-                        MessageBox.Show("Portfolio deleted successfully.");
-                        LoadPortfolios();  // Reload the portfolios after deletion
-                    }
-                    else
-                    {
-                        MessageBox.Show("Failed to delete portfolio.");
-                    }
-                }
-                catch (Exception ex)
+                if (result == MessageBoxResult.Yes)
                 {
-                    MessageBox.Show("Error deleting portfolio: " + ex.Message);
+                    try
+                    {
+                        ApiService apiService = new ApiService();
+                        int isDeleted = await apiService.DeletePortfolio(portfolioDisplay.OriginalPortoflio.Id);
+
+                        if (isDeleted == 1)
+                        {
+                            MessageBox.Show("Portfolio deleted successfully.");
+                            LoadPortfolios();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to delete portfolio.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error deleting portfolio: " + ex.Message);
+                    }
                 }
             }
         }
 
         private async void AddPortfolio(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(PortfolioNameTextBox.Text))
+            {
+                MessageBox.Show("Portfolio name is required.");
+                return;
+            }
+
             try
             {
                 Portfolio portfolio = new Portfolio
                 {
                     UserId = currentUser.Id,
-                    PortfolioName = PortfolioNameTextBox.Text,
+                    PortfolioName = PortfolioNameTextBox.Text.Trim(),
                     DateCreated = DateTime.Today,
                     TotalValue = 0,
-                    Description = PortfolioDescriptionTextBox.Text
+                    Description = PortfolioDescriptionTextBox.Text?.Trim() ?? string.Empty
                 };
 
                 ApiService apiService = new ApiService();
@@ -166,11 +228,14 @@ namespace GayorFinance
                 if (result == 1)
                 {
                     MessageBox.Show("Portfolio has been successfully added!");
+                    AddPortfolioDialogHost.IsOpen = false;
+                    PortfolioNameTextBox.Text = string.Empty;
+                    PortfolioDescriptionTextBox.Text = string.Empty;
                     LoadPortfolios();
                 }
                 else
                 {
-                    MessageBox.Show("Portfolio has not been added!");
+                    MessageBox.Show("Failed to add portfolio.");
                 }
             }
             catch (Exception ex)
@@ -182,6 +247,8 @@ namespace GayorFinance
         private void CloseAddPortfolioDialog(object sender, RoutedEventArgs e)
         {
             AddPortfolioDialogHost.IsOpen = false;
+            PortfolioNameTextBox.Text = string.Empty;
+            PortfolioDescriptionTextBox.Text = string.Empty;
         }
 
         private void ShowAddPortfolioDialog(object sender, RoutedEventArgs e)
@@ -197,27 +264,6 @@ namespace GayorFinance
                 mainWindow.NavigateTPortfolioPage(portfolioDisplay.OriginalPortoflio);
             }
         }
-        private void SearchButton_Click(object sender, RoutedEventArgs e)
-        {
-            string searchText = SearchTextBox.Text;
-
-            if (string.IsNullOrWhiteSpace(searchText))
-            {
-                SearchTextBox.Text = "";
-            }
-            else
-            {
-                var mainWindow = (MainWindow)Application.Current.MainWindow;
-                mainWindow.NavigateToStockPage(searchText);
-            }
-        }
-
-
-        private void PortfolioClick(object sender, RoutedEventArgs e)
-        {
-            var mainWindow = (MainWindow)Application.Current.MainWindow;
-            mainWindow.NavigateToUserPortfoliosPage();
-        }
 
         private void SettingsClick(object sender, RoutedEventArgs e)
         {
@@ -227,16 +273,8 @@ namespace GayorFinance
 
         private void MarketNewsClick(object sender, RoutedEventArgs e)
         {
-
-        }
-
-        private void MarketOverviewList_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (sender is ListBox listBox && listBox.SelectedItem is StockQuote selectedStock)
-            {
-                var mainWindow = (MainWindow)Application.Current.MainWindow;
-                mainWindow.NavigateToStockPage(selectedStock.Symbol);
-            }
+            // Implement market news navigation
+            MessageBox.Show("Market News feature coming soon!");
         }
     }
 }

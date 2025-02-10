@@ -51,5 +51,10 @@ namespace GayorFinance
         {
 
         }
+
+        private void ForgotPassword_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

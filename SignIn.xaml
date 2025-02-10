@@ -5,58 +5,144 @@
       FontFamily="Segoe UI"
       FontSize="14"
       Title="Sign In">
+    
+    <Page.Resources>
+        <Storyboard x:Key="FadeIn">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                           From="0" To="1" Duration="0:0:0.3"/>
+        </Storyboard>
+        
+        <Style x:Key="HoverButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="(Button.RenderTransform).(ScaleTransform.ScaleX)"
+                                           To="1.05" Duration="0:0:0.2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="(Button.RenderTransform).(ScaleTransform.ScaleY)"
+                                           To="1.05" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="(Button.RenderTransform).(ScaleTransform.ScaleX)"
+                                           To="1" Duration="0:0:0.2"/>
+                            <DoubleAnimation Storyboard.TargetProperty="(Button.RenderTransform).(ScaleTransform.ScaleY)"
+                                           To="1" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+
     <Grid Background="#F0F2F5">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <Border Background="White" VerticalAlignment="Center" CornerRadius="16" Padding="50" Margin="16,32"
-                    BorderBrush="#E0E0E0" BorderThickness="1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top Banner -->
+        <materialDesign:Card Grid.Row="0" Background="#1B5E20" >
+            <Grid Height="60">
+                <StackPanel Orientation="Horizontal" Margin="20,0">
+                    <materialDesign:PackIcon Kind="Finance" Width="32" Height="32" Foreground="White" 
+                                           VerticalAlignment="Center"/>
+                    <TextBlock Text="Gayor Finance" FontSize="24" Foreground="White" Margin="12,0,0,0" 
+                             VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <materialDesign:Card Background="White" VerticalAlignment="Center" Margin="16,32"
+                               UniformCornerRadius="16" Padding="40">
                 <StackPanel>
-                    <!-- Title -->
-                    <TextBlock Text="Welcome Back" FontSize="30" FontWeight="Bold" 
-                               HorizontalAlignment="Center" Margin="0,0,0,32" Foreground="#333333"/>
+                    <!-- Welcome Section -->
+                    <StackPanel Margin="0,0,0,32">
+                        <TextBlock Text="Welcome Back" FontSize="32" FontWeight="Bold" 
+                                 HorizontalAlignment="Center" Foreground="#1B5E20"/>
+                        <TextBlock Text="Sign in to continue to your account" FontSize="14" 
+                                 Foreground="#757575" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                    </StackPanel>
+
+
 
                     <!-- Email -->
-                    <TextBox x:Name="EmailTextBox" materialDesign:HintAssist.Hint="Email Address" Height="60"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,8"/>
+                    <TextBox x:Name="EmailTextBox" 
+                            materialDesign:HintAssist.Hint="Email Address"
+                            materialDesign:TextFieldAssist.HasClearButton="True"
+                            materialDesign:TextFieldAssist.PrefixText="✉"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                            Height="56" Margin="0,8"/>
 
                     <!-- Password -->
-                    <Grid>
-                        <PasswordBox x:Name="PasswordBox" materialDesign:HintAssist.Hint="Password" Height="60"
-                                     Style="{StaticResource MaterialDesignOutlinedPasswordBox}"/>
-                        <TextBox x:Name="VisiblePasswordBox" materialDesign:HintAssist.Hint="Password" Height="60"
-                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                 Visibility="Collapsed"/>
-                        <Button HorizontalAlignment="Right" Margin="0,0,10,0" 
-                                Style="{StaticResource MaterialDesignIconButton}"
-                                Click="TogglePasswordVisibility_Click">
+                    <Grid Margin="0,8">
+                        <PasswordBox x:Name="PasswordBox"
+                                   materialDesign:HintAssist.Hint="Password"
+                                   materialDesign:TextFieldAssist.HasClearButton="True"
+                                   materialDesign:PasswordBoxAssist.Password="{Binding Password}"
+                                   Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                                   Height="56"/>
+                        <TextBox x:Name="VisiblePasswordBox"
+                                materialDesign:HintAssist.Hint="Password"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                Height="56"
+                                Visibility="Collapsed"/>
+                        <Button HorizontalAlignment="Right" Margin="0,0,8,0" 
+                               Style="{StaticResource MaterialDesignIconButton}"
+                               Click="TogglePasswordVisibility_Click">
                             <materialDesign:PackIcon Kind="Eye"/>
                         </Button>
                     </Grid>
 
-                    <!-- Forgot Password -->
-                    <TextBlock Text="Forgot Password?" Foreground="#2E7D32" FontWeight="SemiBold"
-                               HorizontalAlignment="Right" Cursor="Hand" Margin="0,8,0,20"/>
+                    <!-- Remember Me & Forgot Password -->
+                    <Grid Margin="0,8">
+                        <CheckBox Content="Remember me" Style="{StaticResource MaterialDesignCheckBox}"/>
+                        <TextBlock Text="Forgot Password?" Foreground="#1B5E20" FontWeight="SemiBold"
+                                 HorizontalAlignment="Right" Cursor="Hand"
+                                 MouseDown="ForgotPassword_Click"/>
+                    </Grid>
 
                     <!-- Login Button -->
-                    <Button x:Name="LoginButton" Content="Login" Height="40" Margin="0,20" 
-                            Click="LoginButton_Click"
-                            Style="{StaticResource MaterialDesignRaisedButton}">
+                    <Button x:Name="LoginButton" Content="SIGN IN" Height="48" Margin="0,32"
+                           Style="{StaticResource HoverButton}"
+                           Click="LoginButton_Click"
+                           RenderTransformOrigin="0.5,0.5">
+                        <Button.RenderTransform>
+                            <ScaleTransform/>
+                        </Button.RenderTransform>
                         <Button.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#4CAF50" Offset="0"/>
-                                <GradientStop Color="#45A045" Offset="1"/>
+                                <GradientStop Color="#2E7D32" Offset="0"/>
+                                <GradientStop Color="#1B5E20" Offset="1"/>
                             </LinearGradientBrush>
                         </Button.Background>
                     </Button>
 
+                    <!-- Loading Progress -->
+                    <ProgressBar x:Name="LoadingProgress" 
+                               Style="{StaticResource MaterialDesignCircularProgressBar}"
+                               Value="0"
+                               IsIndeterminate="True"
+                               Visibility="Collapsed"
+                               HorizontalAlignment="Center"
+                               Margin="0,16"/>
+
                     <!-- Sign Up Link -->
-                    <TextBlock HorizontalAlignment="Center" FontSize="14" Foreground="#757575">
-                        <Run Text="Don't have an account? "/>
-                        <Hyperlink Click="GoToSignUpButton_Click" Foreground="#2E7D32" FontWeight="SemiBold">
-                            Sign Up
+                    <TextBlock HorizontalAlignment="Center" FontSize="14">
+                        <Run Text="Don't have an account? " Foreground="#757575"/>
+                        <Hyperlink Click="GoToSignUpButton_Click" 
+                                 Style="{StaticResource MaterialDesignBody1Hyperlink}"
+                                 Foreground="#1B5E20">
+                            Create Account
                         </Hyperlink>
                     </TextBlock>
                 </StackPanel>
-            </Border>
+            </materialDesign:Card>
         </ScrollViewer>
     </Grid>
 </Page>

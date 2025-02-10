@@ -2,156 +2,381 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:system="clr-namespace:System;assembly=mscorlib"
       Title="LandingPage">
 
-    <Grid Background="{DynamicResource MaterialDesignPaper}">
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#F5F7FA" Offset="0"/>
+                <GradientStop Color="#E4E9F2" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="64"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Navigation Bar -->
-        <DockPanel Background="{DynamicResource MaterialDesignPaper}" >
-            <TextBlock Text="Gayor Finance" FontSize="24" FontWeight="Bold" Foreground="Black" VerticalAlignment="Center"/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Market News" Style="{StaticResource MaterialDesignOutlinedButton}" Click="MarketNewsClick" Margin="5"/>
-                <Button Content="Settings" Style="{StaticResource MaterialDesignOutlinedButton}" Click="SettingsClick" Margin="5"/>
-            </StackPanel>
-        </DockPanel>
+        <!-- Modern Navigation Bar -->
+        <materialDesign:Card Grid.Row="0">
+            <DockPanel Margin="16,0">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Finance" Width="32" Height="32" VerticalAlignment="Center"/>
+                    <TextBlock Text="Gayor Finance" FontSize="24" FontWeight="Medium" Margin="12,0,0,0" 
+                             VerticalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,16,0">
+                    <Button Style="{StaticResource MaterialDesignToolButton}" Click="MarketNewsClick">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Newspaper" Margin="0,0,8,0"/>
+                            <TextBlock Text="Market News"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignToolButton}" Click="SettingsClick" Margin="8,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Cog" Margin="0,0,8,0"/>
+                            <TextBlock Text="Settings"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </materialDesign:Card>
 
-        <!-- Search Bar -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-            <TextBox x:Name="SearchTextBox"
-                     materialDesign:HintAssist.Hint="Search Stocks or Portfolios"
-                     Width="400"/>
-            <Button Content="🔍" Style="{StaticResource MaterialDesignFloatingActionButton}" Click="SearchButton_Click" Margin="10"/>
-        </StackPanel>
+        <!-- Enhanced Search Bar -->
+        <Grid Grid.Row="1" Margin="24,16">
+            <materialDesign:Card>
+                <Grid Margin="16,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="SearchTextBox" Grid.Column="1"
+                             materialDesign:HintAssist.Hint="Search stocks, portfolios, or markets..."
+                             materialDesign:TextFieldAssist.DecorationVisibility="Hidden"
+                             BorderThickness="0"
+                             FontSize="16"
+                             Margin="8,0"
+                             KeyDown="SearchTextBox_KeyDown"/>
+                    <Button Grid.Column="2" 
+                            Style="{StaticResource MaterialDesignToolButton}"
+                            Click="SearchButton_Click">
+                        <materialDesign:PackIcon Kind="Search" Width="24" Height="24"/>
+                    </Button>
+                </Grid>
+            </materialDesign:Card>
+        </Grid>
 
-        <!-- Dashboard Section -->
-        <Grid Grid.Row="2" Margin="20">
+        <!-- Dashboard Content -->
+        <Grid Grid.Row="2" Margin="24,0,24,24">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
- <materialDesign:Card Grid.Column="0" Padding="20" Margin="10" Background="#F0F0F0">
-        <StackPanel>
-            <TextBlock Text="Market Overview" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" />
-            <ScrollViewer MaxHeight="500" VerticalScrollBarVisibility="Auto">
-                        <ItemsControl x:Name="MarketOverviewList" MouseDoubleClick="MarketOverviewList_MouseLeftButtonDown">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <materialDesign:Card Padding="15" Margin="0,5,0,5" Background="White" BorderBrush="#E0E0E0" BorderThickness="1">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold" />
-                                        <TextBlock Text="{Binding Symbol}" FontSize="14" Margin="0,4,0,0" />
-                                        <TextBlock Text="{Binding Price, StringFormat=C}" FontSize="14" Margin="0,4,0,0"  />
-                                        <TextBlock Text="{Binding ChangesPercentage, StringFormat='Change: {0:P2}'}" FontSize="14" Margin="0,4,0,0" />
-                                    </StackPanel>
-                                    <StackPanel Grid.Column="1" HorizontalAlignment="Right">
-                                        <TextBlock Text="{Binding MarketCap, StringFormat='Market Cap: {0:N0}'}" FontSize="12" />
-                                        <TextBlock Text="{Binding Volume, StringFormat='Volume: {0:N0}'}" FontSize="12" Margin="0,4,0,0" />
-                                    </StackPanel>
-                                </Grid>
-                            </materialDesign:Card>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-        </StackPanel>
-    </materialDesign:Card>
+            <!-- Market Overview Section -->
+            <materialDesign:Card Grid.Column="0" Margin="0,0,12,0">
+                <materialDesign:Card.Style>
+                    <Style TargetType="materialDesign:Card">
+                        <Setter Property="Background" Value="White"/>
+                        <Setter Property="Effect">
+                            <Setter.Value>
+                                <DropShadowEffect BlurRadius="5" ShadowDepth="1" Opacity="0.2"/>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </materialDesign:Card.Style>
+                <DockPanel Margin="24">
+                    <TextBlock Text="Market Overview" 
+                             FontSize="20" 
+                             FontWeight="Medium" 
+                             DockPanel.Dock="Top" 
+                             Margin="0,0,0,16"/>
 
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="MarketOverviewList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <materialDesign:Card Margin="0,0,0,8" UniformCornerRadius="8">
+                                        <materialDesign:Card.Style>
+                                            <Style TargetType="materialDesign:Card">
+                                                <Setter Property="Cursor" Value="Hand"/>
+                                                <Setter Property="Background" Value="White"/>
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect BlurRadius="5" ShadowDepth="1" Opacity="0.2"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <EventTrigger RoutedEvent="MouseEnter">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation 
+                                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                                    To="-2"
+                                                                    Duration="0:0:0.2"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                    <EventTrigger RoutedEvent="MouseLeave">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation 
+                                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                                    To="0"
+                                                                    Duration="0:0:0.2"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}"/>
+                                                        <Setter Property="Effect">
+                                                            <Setter.Value>
+                                                                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </materialDesign:Card.Style>
+                                        <materialDesign:Card.RenderTransform>
+                                            <TranslateTransform/>
+                                        </materialDesign:Card.RenderTransform>
+                                        <Grid Margin="16">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
 
-            <!-- Portfolio Section with ScrollViewer -->
-            <materialDesign:Card Grid.Column="1" Padding="20" Margin="10">
-                <StackPanel>
-                    <TextBlock Text="My Portfolios" FontSize="18" FontWeight="Bold"/>
-                    <TextBlock x:Name="TotalAllPortfoliosValueTxt" Text="Total Value: $21,328.00" FontSize="14" FontWeight="Bold"/>
-                    <TextBlock x:Name="TotalAllPortfoliosChangePercentTxt" Text="Total Percent Change: 6.41%" FontSize="14" FontWeight="Bold"/>
+                                            <Border Width="48" Height="48" 
+                                                    CornerRadius="24" 
+                                                    Background="{DynamicResource MaterialDesignPaper}">
+                                                <TextBlock Text="{Binding Symbol}" 
+                                                           HorizontalAlignment="Center" 
+                                                           VerticalAlignment="Center"
+                                                           FontWeight="Medium"/>
+                                            </Border>
 
-                    <Button Content="+ Portfolio" Width="160" Height="45" Style="{StaticResource MaterialDesignRaisedButton}" Click="ShowAddPortfolioDialog" Margin="0,20,0,0"/>
+                                            <StackPanel Grid.Column="1" Margin="16,0">
+                                                <TextBlock Text="{Binding Name}" 
+                                                           FontSize="16" 
+                                                           FontWeight="Medium"/>
+                                                <TextBlock Text="{Binding Symbol}" 
+                                                           FontSize="14" 
+                                                           Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                                            </StackPanel>
 
-                    <!-- Scrollable Portfolio List -->
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="600">
+                                            <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                                                <TextBlock Text="{Binding Price, StringFormat=C}" 
+                                                           FontSize="16" 
+                                                           FontWeight="Medium"
+                                                           HorizontalAlignment="Right">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding ChangesPercentage}" Value="0">
+                                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding ChangesPercentage}" Value="True">
+                                                                    <Setter Property="Foreground" Value="ForestGreen"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding ChangesPercentage}" Value="True">
+                                                                    <Setter Property="Foreground" Value="Crimson"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                                <TextBlock Text="{Binding ChangesPercentage, StringFormat='{}{0:+0.00;-0.00}%'}"
+                                                           FontSize="14"
+                                                           HorizontalAlignment="Right">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding ChangesPercentage}" Value="0">
+                                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding ChangesPercentage}" Value="True">
+                                                                    <Setter Property="Foreground" Value="ForestGreen"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding ChangesPercentage}" Value="True">
+                                                                    <Setter Property="Foreground" Value="Crimson"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Grid>
+                                    </materialDesign:Card>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </materialDesign:Card>
+
+            <!-- Portfolio Section -->
+            <materialDesign:Card Grid.Column="1" Margin="12,0,0,0">
+                <materialDesign:Card.Style>
+                    <Style TargetType="materialDesign:Card">
+                        <Setter Property="Background" Value="White"/>
+                        <Setter Property="Effect">
+                            <Setter.Value>
+                                <DropShadowEffect BlurRadius="5" ShadowDepth="1" Opacity="0.2"/>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </materialDesign:Card.Style>
+                <DockPanel Margin="24">
+                    <Grid DockPanel.Dock="Top">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="My Portfolios" FontSize="20" FontWeight="Medium"/>
+
+                        <materialDesign:Card Grid.Row="1" Margin="0,16" UniformCornerRadius="8"
+                                           Background="{DynamicResource PrimaryHueLightBrush}">
+                            <StackPanel Margin="16">
+                                <TextBlock x:Name="TotalAllPortfoliosValueTxt" 
+                                         FontSize="24" 
+                                         FontWeight="Medium"/>
+                                <TextBlock x:Name="TotalAllPortfoliosChangePercentTxt" 
+                                         FontWeight="Medium"/>
+                            </StackPanel>
+                        </materialDesign:Card>
+
+                        <Button Grid.Row="2" 
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Click="ShowAddPortfolioDialog"
+                                HorizontalAlignment="Stretch">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Plus" Margin="0,0,8,0"/>
+                                <TextBlock Text="Create New Portfolio"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,16,0,0">
                         <ItemsControl x:Name="DisplayPortfolios">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <materialDesign:Card Padding="15" Margin="10" Background="White">
-                                        <StackPanel>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Portfolio Name: " FontSize="18" FontWeight="Bold"/>
-                                                <TextBlock Text="{Binding PortfolioName}" FontSize="18" FontWeight="Bold"/>
-                                            </StackPanel>
-
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Portfolio Description: " FontSize="18" FontWeight="Bold"/>
-                                                <TextBlock Text="{Binding Description}" FontSize="18" FontWeight="Bold"/>
-                                            </StackPanel>
-
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Total Value: " FontSize="18" FontWeight="Bold"/>
-                                                <TextBlock Text="{Binding TotalValue, StringFormat=C}" FontSize="18" FontWeight="Bold" Foreground="{Binding TotalValueColor}"/>
-                                            </StackPanel>
-
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="Total Percent Change: " FontSize="18" FontWeight="Bold"/>
-                                                <TextBlock Text="{Binding TotalPercenTChange, StringFormat=P2}" FontSize="18" FontWeight="Bold" Foreground="{Binding TotalPercentChangeColor}"/>
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                                <Button Content="📊 Access" Style="{StaticResource MaterialDesignFlatButton}" Click="AccessPortfolio_Click"/>
-                                                <Button Content="❌ Delete" Style="{StaticResource MaterialDesignFlatButton}" Click="DeletePortfolio_Click" Background="Red" Foreground="White"/>
-                                            </StackPanel>
+                                    <materialDesign:Card Margin="0,0,0,8" UniformCornerRadius="8">
+                                        <materialDesign:Card.Style>
+                                            <Style TargetType="materialDesign:Card">
+                                                <Setter Property="Background" Value="White"/>
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect BlurRadius="5" ShadowDepth="1" Opacity="0.2"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <EventTrigger RoutedEvent="MouseEnter">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation 
+                                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                                    To="-2"
+                                                                    Duration="0:0:0.2"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                    <EventTrigger RoutedEvent="MouseLeave">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation 
+                                                             Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                                    To="0"
+                                                                    Duration="0:0:0.2"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </materialDesign:Card.Style>
+                                        <materialDesign:Card.RenderTransform>
+                                            <TranslateTransform/>
+                                        </materialDesign:Card.RenderTransform>
+                                        <StackPanel Margin="16">
+                                            <Grid>
+                                                <TextBlock Text="{Binding PortfolioName}" 
+                                                         FontSize="16" 
+                                                         FontWeight="Medium"/>
+                                                <StackPanel Orientation="Horizontal" 
+                                                          HorizontalAlignment="Right">
+                                                    <Button Style="{StaticResource MaterialDesignToolButton}"
+                                                            Click="AccessPortfolio_Click">
+                                                        <materialDesign:PackIcon Kind="ChartLine"/>
+                                                    </Button>
+                                                    <Button Style="{StaticResource MaterialDesignToolButton}"
+                                                            Click="DeletePortfolio_Click">
+                                                        <materialDesign:PackIcon Kind="Delete"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </Grid>
+                                            <TextBlock Text="{Binding Description}" 
+                                                     Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                                     TextWrapping="Wrap"/>
+                                            <Grid Margin="0,8,0,0">
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding TotalValue, StringFormat=C}" 
+                                                             FontWeight="Medium"/>
+                                                    <TextBlock Text="{Binding TotalPercenTChange, StringFormat='{}{0:+0.00;-0.00}%'}"
+                                                             Foreground="{Binding TotalPercentChangeColor}"/>
+                                                </StackPanel>
+                                            </Grid>
                                         </StackPanel>
                                     </materialDesign:Card>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-                </StackPanel>
+                </DockPanel>
             </materialDesign:Card>
         </Grid>
 
+        <!-- Add Portfolio Dialog -->
         <materialDesign:DialogHost x:Name="AddPortfolioDialogHost">
             <materialDesign:DialogHost.DialogContent>
-                <Border CornerRadius="10" Background="{DynamicResource MaterialDesignCardBackground}" Padding="20">
-                    <StackPanel Width="400">
-                        <TextBlock Text="Create a New Portfolio" FontSize="22" FontWeight="Bold" Margin="0,0,0,20"/>
+                <materialDesign:Card UniformCornerRadius="8" Padding="24" Width="400">
+                    <StackPanel>
+                        <TextBlock Text="Create New Portfolio" 
+                                 FontSize="24" 
+                                 FontWeight="Medium" 
+                                 Margin="0,0,0,24"/>
 
-                        <!-- Portfolio Name Input -->
                         <TextBox x:Name="PortfolioNameTextBox"
-                         materialDesign:HintAssist.Hint="Portfolio Name"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                         Margin="0,10,0,10"/>
+                                materialDesign:HintAssist.Hint="Portfolio Name"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                Margin="0,0,0,16"/>
 
-                        <!-- Portfolio Description Input -->
                         <TextBox x:Name="PortfolioDescriptionTextBox"
-                         materialDesign:HintAssist.Hint="Portfolio Description"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                         Margin="0,10,0,10"/>
+                                materialDesign:HintAssist.Hint="Description"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                TextWrapping="Wrap"
+                                Height="100"
+                                Margin="0,0,0,24"/>
 
-                        <!-- Buttons -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-                            <Button Content="Cancel"
-                            Style="{StaticResource MaterialDesignFlatButton}"
-                            Click="CloseAddPortfolioDialog"
-                            Margin="5"/>
-
-                            <Button Content="Add Portfolio"
-                            Click="AddPortfolio"
-                            Background="{DynamicResource PrimaryHueMidBrush}"
-                            Foreground="White"
-                            Margin="5"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    Click="CloseAddPortfolioDialog"
+                                    Margin="0,0,8,0">
+                                <TextBlock Text="Cancel"/>
+                            </Button>
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    Click="AddPortfolio">
+                                <TextBlock Text="Create Portfolio"/>
+                            </Button>
                         </StackPanel>
                     </StackPanel>
-                </Border>
+                </materialDesign:Card>
             </materialDesign:DialogHost.DialogContent>
         </materialDesign:DialogHost>
-
     </Grid>
 </Page>

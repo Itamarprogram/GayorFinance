@@ -106,66 +106,105 @@ using ViewModel;
         {
             try
             {
+                // Determine the date range: from the earliest purchase date to today.
                 DateTime startDate = await GetEarliestPurchaseDate();
                 DateTime today = DateTime.Today;
+
+                // Clear any existing values
                 PortfolioValues.Clear();
                 Dates.Clear();
-                List<HistoricalDataResponse> historicalDataResponses = new List<HistoricalDataResponse>();
 
-                // Get all stocks once
+                // Get all stocks for this portfolio.
                 List<PortfolioStocks> allStocks = await FindAllPortfolioStocksByPortfolioId(_selectedPortfolio.Id);
 
-                // Debug the stocks we're working with
+                // Create a dictionary to hold historical quotes for each stock,
+                // keyed by ticker symbol.
+                var stockHistoricalData = new Dictionary<string, List<HistoricalQuote>>();
+
                 foreach (var stock in allStocks)
                 {
-                    // Fetch historical data only for the dates after the stock was purchased
-                    var historicalData = await _apiClient.GetStockQuoteHistoricalDataFromADate(stock.TickerSymbol, stock.PurchaseDate.ToString("yyyy-MM-dd"), today.ToString("yyyy-MM-dd"));
-                    historicalDataResponses.Add(historicalData);
-                    Debug.WriteLine($"Stock: {stock.TickerSymbol}, Quantity: {stock.Quantity}, Purchase Date: {stock.PurchaseDate}");
+                    // Fetch historical data for the stock from its purchase date to today.
+                    var historicalResponse = await _apiClient.GetStockQuoteHistoricalDataFromADate(
+                        stock.TickerSymbol,
+                        stock.PurchaseDate.ToString("yyyy-MM-dd"),
+                        today.ToString("yyyy-MM-dd")
+                    );
+
+                    if (historicalResponse != null && historicalResponse.Historical != null)
+                    {
+                        // Sort the historical data in ascending order by date.
+                        var sortedHistorical = historicalResponse.Historical
+                            .OrderBy(h => DateTime.Parse(h.Date))
+                            .ToList();
+
+                        stockHistoricalData[stock.TickerSymbol] = sortedHistorical;
+                    }
                 }
 
+                // This variable will hold the previous day's portfolio value
+                // to carry forward if needed.
+                double previousTotal = 0;
+
+                // Iterate day-by-day from the earliest purchase date to today.
                 for (DateTime date = startDate; date <= today; date = date.AddDays(1))
                 {
                     double dailyTotal = 0;
 
+                    // Optional: if the day is a weekend or a market holiday, 
+                    // simply use the previous day's total (or you could choose to skip it).
+                    if (IsMarketHoliday(date))
+                    {
+                        PortfolioValues.Add(previousTotal);
+                        Dates.Add(date.ToString("yyyy-MM-dd"));
+                        continue;
+                    }
+
+                    // Sum up the value for each stock for the current day.
                     foreach (var stock in allStocks)
                     {
-                        // Exclude stocks purchased after the current date
-                        if (stock.PurchaseDate <= date)
-                        {
-                            // Find the corresponding historical data for the current stock and date
-                            var historicalData = historicalDataResponses
-                                .FirstOrDefault(h => h.Symbol == stock.TickerSymbol)
-                                ?.Historical
-                                .FirstOrDefault(h => h.Date == date.ToString("yyyy-MM-dd"));
+                        // Only include stocks that have already been purchased.
+                        if (stock.PurchaseDate > date)
+                            continue;
 
-                            if (historicalData != null)
+                        if (stockHistoricalData.ContainsKey(stock.TickerSymbol))
+                        {
+                            // Get the quotes available for this stock up to the current day.
+                            var availableQuotes = stockHistoricalData[stock.TickerSymbol]
+                                .Where(h => DateTime.Parse(h.Date) <= date)
+                                .ToList();
+
+                            if (availableQuotes.Any())
                             {
-                                double stockPrice = historicalData.Close;
-                                double stockValue = stock.Quantity * stockPrice;
-                                dailyTotal += stockValue;
+                                // Use the latest available quote up to the current day.
+                                var latestQuote = availableQuotes.Last();
+                                dailyTotal += stock.Quantity * latestQuote.Close;
+                            }
+                            else
+                            {
+                                // If there are no quotes (which might occur on the day of purchase if the API hasn't updated),
+                                // you might consider using the purchase price or simply skipping it.
+                                dailyTotal += stock.Quantity * (double)stock.PurchasePrice;
                             }
                         }
                     }
 
-                    if (dailyTotal > 0)
-                    {
-                        Debug.WriteLine($"Adding value for {date:yyyy-MM-dd}: ${dailyTotal}");
-                        PortfolioValues.Add(dailyTotal);
-                        Dates.Add(date.ToString("yyyy-MM-dd"));
-                    }
+                    // Save the computed total for the day.
+                    PortfolioValues.Add(dailyTotal);
+                    Dates.Add(date.ToString("yyyy-MM-dd"));
+                    previousTotal = dailyTotal;
                 }
 
-                // Update chart
+                // Update the chart with the new values.
                 portfolioChart.Series[0].Values = PortfolioValues;
                 portfolioChart.AxisX[0].Labels = Dates;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error: {ex.Message}");
+                Debug.WriteLine($"Error loading portfolio history: {ex.Message}");
                 MessageBox.Show("Error loading portfolio history: " + ex.Message);
             }
         }
+
 
 
         // Add this helper method to handle market holidays and weekends
@@ -244,9 +283,11 @@ using ViewModel;
                 {
                     MessageBox.Show("Error adding investment: " + ex.Message);
                 }
+                AddInvestmentDialogHost.IsOpen = false;
+
             }
 
-            private async void InvestmentDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        private async void InvestmentDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
             {
                 if (InvestmentDatePicker.SelectedDate != null)
                 {
@@ -307,7 +348,37 @@ using ViewModel;
                     }
                 }
             }
+
+        private void portfolioChart_Loaded(object sender, RoutedEventArgs e)
+        {
+
         }
+
+        private void DecrementQuantity(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DecimalValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+
+        }
+
+        private void FetchMarketPrice(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void IncrementQuantity(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+
+        }
+    }
     }
 
 

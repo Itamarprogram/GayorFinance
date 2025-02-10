@@ -1,27 +1,24 @@
 ﻿using model;
+using MyServices;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using MyServices;
-using System.Windows.Navigation;
-using System.Threading.Channels;
-using System.Text.RegularExpressions;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
 namespace GayorFinance
 {
-    public partial class SignUpPage : Page
+    public partial class SignUpPage : Page, INotifyPropertyChanged
     {
         public ObservableCollection<Countries> CountryList { get; set; }
         public List<Countries> CountryObjectList { get; set; }
         public Action OnSignUpSuccess { get; set; }
-
 
         // Add new properties for enhanced features
         private int _currentStep = 1;
@@ -121,8 +118,6 @@ namespace GayorFinance
             PasswordStrength = strength;
         }
 
-
-
         private void UpdateStepVisibility()
         {
             Step1Panel.Visibility = CurrentStep == 1 ? Visibility.Visible : Visibility.Collapsed;
@@ -156,6 +151,7 @@ namespace GayorFinance
             }
         }
 
+        // Fixed: Removed the extraneous 's' after the parameters.
         private void NextStep_Click(object sender, RoutedEventArgs e)
         {
             if (ValidateCurrentStep())
@@ -266,7 +262,7 @@ namespace GayorFinance
                     MessageBox.Show("Please fill in all fields.");
                     return;
                 }
-                if(await CheckForEmailDuplicate(EmailTextBox.Text))
+                if (await CheckForEmailDuplicate(EmailTextBox.Text))
                 {
                     MessageBox.Show("Email already exists!");
                     return;
@@ -317,6 +313,7 @@ namespace GayorFinance
             string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
             return Regex.IsMatch(email, emailPattern);
         }
+
         public bool IsValidPassword(string password)
         {
             if (string.IsNullOrWhiteSpace(password))
@@ -327,13 +324,13 @@ namespace GayorFinance
             return Regex.IsMatch(password, passwordPattern);
         }
 
-        public async Task<bool> CheckForEmailDuplicate(String EmailTextBox)
+        public async Task<bool> CheckForEmailDuplicate(string email)
         {
             try
             {
                 ApiService apiService = new ApiService();
                 UserList users = await apiService.GetUsers();
-                User? foundUser = users.Find(users => users.Email == EmailTextBox);
+                User foundUser = users.Find(user => user.Email == email);
                 if (foundUser != null)
                 {
                     return true;
@@ -347,13 +344,10 @@ namespace GayorFinance
             return false;
         }
 
-
         private void GoToSignInButton_Click(object sender, RoutedEventArgs e)
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.NavigateToSignIn();
         }
-
-
     }
 }
