@@ -2,67 +2,276 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      FontFamily="Segoe UI"
+      FontFamily="{materialDesign:MaterialDesignFont}"
       FontSize="14"
       Title="Sign Up">
-    <Grid Background="#F0F2F5">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0">
-            <Border Background="White" VerticalAlignment="Center" CornerRadius="16" Padding="50" Margin="16,32"
-                    BorderBrush="#E0E0E0" BorderThickness="1" >
+
+    <Page.Resources>
+        <!-- Floating animation for decorative elements -->
+        <Storyboard x:Key="FloatingAnimation" RepeatBehavior="Forever">
+            <DoubleAnimation 
+                Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                From="0" To="-10" Duration="0:0:2" AutoReverse="True">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <!-- Step transition animation -->
+        <Storyboard x:Key="StepTransition">
+            <DoubleAnimation 
+                Storyboard.TargetProperty="Opacity"
+                From="0" To="1" Duration="0:0:0.3">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </Page.Resources>
+
+    <Grid>
+        <!-- Background with gradient -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#F8FAFF" Offset="0"/>
+                <GradientStop Color="#F0F4FF" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- Decorative Background Elements -->
+        <Canvas>
+            <Ellipse Width="400" Height="400" Canvas.Left="-200" Canvas.Top="-100">
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#6366F120" Offset="0"/>
+                        <GradientStop Color="#6366F100" Offset="1"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+            <Ellipse Width="300" Height="300" Canvas.Right="-100" Canvas.Bottom="-50">
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#818CF820" Offset="0"/>
+                        <GradientStop Color="#818CF800" Offset="1"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+        </Canvas>
+
+        <!-- Top Banner -->
+        <materialDesign:Card Grid.Row="0" Background="Transparent" Margin="16,16,16,0"
+                            UniformCornerRadius="16">
+            <Grid Height="70">
+                <Grid.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#6366F1" Offset="0"/>
+                        <GradientStop Color="#818CF8" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+                <StackPanel Orientation="Horizontal" Margin="24,0">
+                    <materialDesign:PackIcon Kind="Finance" Width="36" Height="36" Foreground="White" 
+                                           VerticalAlignment="Center">
+                        <materialDesign:PackIcon.Effect>
+                            <DropShadowEffect ShadowDepth="1" BlurRadius="4" Opacity="0.3"/>
+                        </materialDesign:PackIcon.Effect>
+                    </materialDesign:PackIcon>
+                    <TextBlock Text="Gayor Finance" FontSize="26" FontWeight="Medium" Foreground="White" 
+                             Margin="12,0,0,0" VerticalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect ShadowDepth="1" BlurRadius="4" Opacity="0.3"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,90,0,0">
+            <materialDesign:Card Background="White" VerticalAlignment="Center" Margin="24,20"
+                                 UniformCornerRadius="24" Padding="48"
+                                 materialDesign:ElevationAssist.Elevation="Dp3">
                 <Grid>
                     <!-- Success Animation -->
                     <materialDesign:PackIcon x:Name="SuccessIcon" Kind="CheckCircle" 
-                                           Width="100" Height="100" Foreground="#4CAF50"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                                           Visibility="Collapsed"/>
+                                             Width="120" Height="120" 
+                                             Foreground="#6366F1"
+                                             HorizontalAlignment="Center" 
+                                             VerticalAlignment="Center"
+                                             Visibility="Collapsed">
+                        <materialDesign:PackIcon.Effect>
+                            <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.3"/>
+                        </materialDesign:PackIcon.Effect>
+                    </materialDesign:PackIcon>
 
                     <StackPanel>
                         <!-- Title -->
-                        <TextBlock Text="Create Your Account" FontSize="30" FontWeight="Bold" 
-                                 HorizontalAlignment="Center" Margin="0,0,0,32" Foreground="#333333"/>
+                        <TextBlock Text="Create Your Account" FontSize="38" FontWeight="Bold" 
+                                   HorizontalAlignment="Center" Margin="0,0,0,32" Foreground="#2D3748">
+                            <TextBlock.Effect>
+                                <DropShadowEffect ShadowDepth="1" BlurRadius="2" Opacity="0.1"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
 
                         <!-- Stepper Progress -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,32">
-                            <ProgressBar Width="50" Height="4" Margin="4" Value="{Binding CurrentStep}" Maximum="1"/>
-                            <ProgressBar Width="50" Height="4" Margin="4" Value="{Binding CurrentStep}" Maximum="2"/>
-                            <ProgressBar Width="50" Height="4" Margin="4" Value="{Binding CurrentStep}" Maximum="3"/>
-                            <ProgressBar Width="50" Height="4" Margin="4" Value="{Binding CurrentStep}" Maximum="4"/>
-                        </StackPanel>
+                        <Grid Margin="0,0,0,40">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Height="68" VerticalAlignment="Top">
+                                <Border Width="40" Height="40" CornerRadius="20" 
+                                        x:Name="Step1Indicator" Background="#6366F1"
+                                        HorizontalAlignment="Center">
+                                    <TextBlock Text="1" Foreground="White" 
+                                               HorizontalAlignment="Center" 
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Basic Info" HorizontalAlignment="Center" 
+                                           Margin="0,8,0,0" Foreground="#718096"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1">
+                                <Border Width="40" Height="40" CornerRadius="20" 
+                                        x:Name="Step2Indicator" Background="#6366F1"
+                                        HorizontalAlignment="Center">
+                                    <TextBlock Text="2" Foreground="White" 
+                                               HorizontalAlignment="Center" 
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Email" HorizontalAlignment="Center" 
+                                           Margin="0,8,0,0" Foreground="#718096"/>
+                            </StackPanel>
+
+                       
+
+                            <StackPanel Grid.Column="2">
+                                <Border Width="40" Height="40" CornerRadius="20" 
+                                        x:Name="Step3Indicator" Background="#6366F1"
+                                        HorizontalAlignment="Center">
+                                    <TextBlock Text="3" Foreground="White" 
+                                               HorizontalAlignment="Center" 
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Password" HorizontalAlignment="Center" 
+                                           Margin="0,8,0,0" Foreground="#718096"/>
+                            </StackPanel>
+
+         
+
+                            <StackPanel Grid.Column="3">
+                                <Border Width="40" Height="40" CornerRadius="20" 
+                                        x:Name="Step4Indicator" Background="#6366F1"
+                                        HorizontalAlignment="Center">
+                                    <TextBlock Text="4" Foreground="White" 
+                                               HorizontalAlignment="Center" 
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Details" HorizontalAlignment="Center" 
+                                           Margin="0,8,0,0" Foreground="#718096"/>
+                            </StackPanel>
+                        </Grid>
 
                         <!-- Step 1: Basic Information -->
                         <StackPanel x:Name="Step1Panel">
-                            <TextBox x:Name="FirstNameTextBox" materialDesign:HintAssist.Hint="First Name" Height="60"
-                                   Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,8"/>
-                            <TextBox x:Name="LastNameTextBox" materialDesign:HintAssist.Hint="Last Name" Height="60"
-                                   Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,8"/>
+                            <TextBox x:Name="FirstNameTextBox" 
+                                     materialDesign:HintAssist.Hint="First Name"
+                                     materialDesign:TextFieldAssist.HasClearButton="True"
+                                     materialDesign:TextFieldAssist.UnderlineBrush="#6366F1"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Height="60" Margin="0,8"/>
+
+                            <TextBox x:Name="LastNameTextBox" 
+                                     materialDesign:HintAssist.Hint="Last Name"
+                                     materialDesign:TextFieldAssist.HasClearButton="True"
+                                     materialDesign:TextFieldAssist.UnderlineBrush="#6366F1"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Height="60" Margin="0,8"/>
                         </StackPanel>
 
                         <!-- Step 2: Email -->
                         <StackPanel x:Name="Step2Panel" Visibility="Collapsed">
-                            <TextBox x:Name="EmailTextBox" materialDesign:HintAssist.Hint="Email Address" Height="60"
-                                   Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,8"/>
+                            <TextBox x:Name="EmailTextBox" 
+                                     materialDesign:HintAssist.Hint="Email Address"
+                                     materialDesign:TextFieldAssist.HasClearButton="True"
+                                     materialDesign:TextFieldAssist.PrefixText="✉"
+                                     materialDesign:TextFieldAssist.UnderlineBrush="#6366F1"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Height="60" Margin="0,8"/>
                         </StackPanel>
 
                         <!-- Step 3: Password -->
                         <StackPanel x:Name="Step3Panel" Visibility="Collapsed">
                             <Grid>
-                                <PasswordBox x:Name="PasswordTextBox" materialDesign:HintAssist.Hint="Password" Height="60"
-                                           Style="{StaticResource MaterialDesignOutlinedPasswordBox}"/>
-                                <TextBox x:Name="VisiblePasswordBox" materialDesign:HintAssist.Hint="Password" Height="60"
-                                       Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                       Visibility="Collapsed"/>
-                                <Button HorizontalAlignment="Right" Margin="0,0,10,0" 
-                                      Style="{StaticResource MaterialDesignIconButton}"
-                                      Click="TogglePasswordVisibility_Click">
+                                <PasswordBox x:Name="PasswordTextBox"
+                                             materialDesign:HintAssist.Hint="Password"
+                                             materialDesign:TextFieldAssist.HasClearButton="True"
+                                             materialDesign:TextFieldAssist.UnderlineBrush="#6366F1"
+                                             Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                                             Height="60"/>
+                                <TextBox x:Name="VisiblePasswordBox"
+                                         materialDesign:HintAssist.Hint="Password"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         Height="60"
+                                         Visibility="Collapsed"/>
+                                <Button HorizontalAlignment="Right" Margin="0,0,12,0" 
+                                        Style="{StaticResource MaterialDesignIconButton}"
+                                        Click="TogglePasswordVisibility_Click">
                                     <materialDesign:PackIcon Kind="Eye"/>
                                 </Button>
                             </Grid>
+
+                            <!-- Password Requirements -->
+                            <materialDesign:Card Margin="0,16" Padding="16" 
+                                                 UniformCornerRadius="8"
+                                                 Background="#F8FAFF">
+                                <StackPanel>
+                                    <TextBlock Text="Password Requirements" 
+                                               FontWeight="Medium" 
+                                               Margin="0,0,0,8"/>
+                                    <StackPanel Margin="8,0,0,0">
+                                        <TextBlock Margin="0,4">
+                                            <materialDesign:PackIcon Kind="CheckCircle" 
+                                                                     Foreground="#6366F1"
+                                                                     VerticalAlignment="Center"/>
+                                            <Run Text=" At least 8 characters"/>
+                                        </TextBlock>
+                                        <TextBlock Margin="0,4">
+                                            <materialDesign:PackIcon Kind="CheckCircle" 
+                                                                     Foreground="#6366F1"
+                                                                     VerticalAlignment="Center"/>
+                                            <Run Text=" One uppercase letter"/>
+                                        </TextBlock>
+                                        <TextBlock Margin="0,4">
+                                            <materialDesign:PackIcon Kind="CheckCircle" 
+                                                                     Foreground="#6366F1"
+                                                                     VerticalAlignment="Center"/>
+                                            <Run Text=" One number"/>
+                                        </TextBlock>
+                                        <TextBlock Margin="0,4">
+                                            <materialDesign:PackIcon Kind="CheckCircle" 
+                                                                     Foreground="#6366F1"
+                                                                     VerticalAlignment="Center"/>
+                                            <Run Text=" One special character"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </materialDesign:Card>
+
                             <!-- Password Strength Indicator -->
-                            <ProgressBar Height="4" Margin="0,8" Maximum="100" 
-                                       Value="{Binding PasswordStrength}"
-                                       Foreground="{Binding PasswordStrengthColor}"/>
-                            <TextBlock Text="{Binding PasswordStrength, StringFormat=Password Strength: {0}%}"
-                                     Foreground="{Binding PasswordStrengthColor}" Margin="0,4"/>
+                            <StackPanel Margin="0,8">
+                                <Grid>
+                                    <ProgressBar Height="4" Maximum="100" 
+                                                 Value="{Binding PasswordStrength}"
+                                                 Foreground="{Binding PasswordStrengthColor}"/>
+                                </Grid>
+                                <TextBlock Text="{Binding PasswordStrength, 
+                                                 StringFormat=Password Strength: {0}%}"
+                                           Foreground="{Binding PasswordStrengthColor}" 
+                                           Margin="0,4"/>
+                            </StackPanel>
                         </StackPanel>
 
                         <!-- Step 4: Additional Information -->
@@ -103,7 +312,10 @@
                         </TextBlock>
                     </StackPanel>
                 </Grid>
-            </Border>
+            </materialDesign:Card>
         </ScrollViewer>
     </Grid>
 </Page>
+    
+    
+    

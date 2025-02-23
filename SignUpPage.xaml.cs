@@ -87,6 +87,7 @@ namespace GayorFinance
             LoadCountriesAsync();
             PasswordTextBox.PasswordChanged += (s, e) => UpdatePasswordStrength();
             VisiblePasswordBox.TextChanged += (s, e) => UpdatePasswordStrength();
+            UpdateStepUI();
         }
 
         private void UpdatePasswordVisibility()
@@ -154,29 +155,41 @@ namespace GayorFinance
         // Fixed: Removed the extraneous 's' after the parameters.
         private void NextStep_Click(object sender, RoutedEventArgs e)
         {
-            if (ValidateCurrentStep())
+            if (_currentStep < 4)
             {
-                if (CurrentStep < 4)
-                {
-                    CurrentStep++;
-                }
-                else
-                {
-                    SignUpButton_Click(sender, e);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Please complete all required fields correctly before proceeding.");
+                _currentStep++;
+                UpdateStepUI();
             }
         }
 
         private void PreviousStep_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentStep > 1)
+            if (_currentStep > 1)
             {
-                CurrentStep--;
+                _currentStep--;
+                UpdateStepUI();
             }
+        }
+
+        private void UpdateStepUI()
+        {
+            // Reset all step indicators to default
+            Step1Indicator.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+            Step2Indicator.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+            Step3Indicator.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+            Step4Indicator.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+
+            // Highlight the current step and previous steps
+            if (_currentStep >= 1) Step1Indicator.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+            if (_currentStep >= 2) Step2Indicator.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+            if (_currentStep >= 3) Step3Indicator.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+            if (_currentStep >= 4) Step4Indicator.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6366F1"));
+
+            // Manage visibility of panels
+            Step1Panel.Visibility = _currentStep == 1 ? Visibility.Visible : Visibility.Collapsed;
+            Step2Panel.Visibility = _currentStep == 2 ? Visibility.Visible : Visibility.Collapsed;
+            Step3Panel.Visibility = _currentStep == 3 ? Visibility.Visible : Visibility.Collapsed;
+            Step4Panel.Visibility = _currentStep == 4 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void TogglePasswordVisibility_Click(object sender, RoutedEventArgs e)

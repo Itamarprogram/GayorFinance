@@ -44,12 +44,28 @@
     </Page.Resources>
 
     <Grid Background="#F5F7FA">
+        
+        
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <Button Style="{StaticResource MaterialDesignIconButton}"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        Width="48"
+        Height="48"
+        Margin="20,20,0,0"
+        Click="NavigateBack_Click"
+        Panel.ZIndex="1">
+            <materialDesign:PackIcon Kind="ArrowLeft"
+                           Width="24"
+                           Height="24"/>
+        </Button>
+
+
+
 
         <!-- Header Section -->
         <Border Grid.Row="0" Style="{StaticResource ModernCard}" Margin="20,20,20,10" Padding="20">
@@ -73,222 +89,212 @@
             </Grid>
         </Border>
 
-        <!-- Quick Stats Cards --><!--
-        <WrapPanel Grid.Row="1" Margin="20,10" HorizontalAlignment="Center">
-            <Border Style="{StaticResource ModernCard}" Width="200" Height="100" Margin="10">
-                <StackPanel >
-                    <TextBlock Text="Best Performer" FontSize="14" Foreground="#666"/>
-                    <TextBlock Text="{Binding BestPerformer}" FontSize="18" FontWeight="Bold" Margin="0,5"/>
-                    <TextBlock Text="{Binding BestPerformerChange}" Foreground="Green" FontWeight="SemiBold"/>
-                </StackPanel>
-            </Border>
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1" Margin="20,10,20,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"/>
+                <!-- Fixed width for investments -->
+                <ColumnDefinition Width="*"/>
+                <!-- Flexible width for chart -->
+            </Grid.ColumnDefinitions>
 
-            <Border Style="{StaticResource ModernCard}" Width="200" Height="100" Margin="10">
-                <StackPanel >
-                    <TextBlock Text="Today's Change" FontSize="14" Foreground="#666"/>
-                    <TextBlock Text="{Binding TodayChange}" FontSize="18" FontWeight="Bold" Margin="0,5"/>
-                    <TextBlock Text="{Binding TodayChangePercent}" FontWeight="SemiBold"/>
-                </StackPanel>
-            </Border>
+            <!-- Investments Section (Left Side) -->
+            <Border Grid.Column="0" Style="{StaticResource ModernCard}" Margin="0,0,10,0">
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-            <Border Style="{StaticResource ModernCard}" Width="200" Height="100" Margin="10">
-                <StackPanel >
-                    <TextBlock Text="Total Investments" FontSize="14" Foreground="#666"/>
-                    <TextBlock Text="{Binding TotalInvestments}" FontSize="18" FontWeight="Bold" Margin="0,5"/>
-                    <TextBlock Text="Active Positions" Foreground="#666"/>
-                </StackPanel>
-            </Border>
-        </WrapPanel>-->
+                    <TextBlock Grid.Row="0" Text="Your Investments" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,15"/>
 
-        <!-- Chart Section -->
-        <Border Grid.Row="2" Style="{StaticResource ModernCard}" Margin="20,10">
-            <Grid Margin="15">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="1" Margin="0,0,0,15">
+                        <TextBox Width="Auto" Margin="0,0,0,10"
+                                materialDesign:HintAssist.Hint="Search investments..."
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
 
-                <!-- Chart Controls -->
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
-                    <ComboBox Width="120" materialDesign:HintAssist.Hint="Time Range"
-                             SelectedIndex="0" Margin="0,0,10,0">
-                        <ComboBoxItem Content="1M"/>
-                        <ComboBoxItem Content="3M"/>
-                        <ComboBoxItem Content="6M"/>
-                        <ComboBoxItem Content="1Y"/>
-                        <ComboBoxItem Content="All"/>
-                    </ComboBox>
-
-
-                </StackPanel>
-
-                <!-- Enhanced Chart -->
-                <lvc:CartesianChart Grid.Row="1" Name="portfolioChart">
-                    <lvc:CartesianChart.Series>
-                        <lvc:LineSeries Title="Portfolio Value"
-                                       Values="{Binding PortfolioValues}"
-                                       PointGeometrySize="0"
-                                       LineSmoothness="0.5"
-                                       StrokeThickness="3"
-                                       Stroke="#2196F3"
-                                       Fill="#182196F3">
-
-                        </lvc:LineSeries>
-                    </lvc:CartesianChart.Series>
-
-                    <lvc:CartesianChart.AxisX>
-                        <lvc:Axis Title="Date"
-                                 Labels="{Binding Dates}"
-                                 LabelsRotation="25"
-                                 Foreground="#666">
-                            <lvc:Axis.Separator>
-                                <lvc:Separator StrokeThickness="1" StrokeDashArray="2" Stroke="#E0E0E0"/>
-                            </lvc:Axis.Separator>
-                        </lvc:Axis>
-                    </lvc:CartesianChart.AxisX>
-
-                    <lvc:CartesianChart.AxisY>
-                        <lvc:Axis Title="Value ($)"
-                                 LabelFormatter="{Binding ValueFormatter}"
-                                 Foreground="#666">
-                            <lvc:Axis.Separator>
-                                <lvc:Separator StrokeThickness="1" StrokeDashArray="2" Stroke="#E0E0E0"/>
-                            </lvc:Axis.Separator>
-                        </lvc:Axis>
-                    </lvc:CartesianChart.AxisY>
-                </lvc:CartesianChart>
-            </Grid>
-        </Border>
-
-        <!-- Investments Table -->
-        <Border Grid.Row="3" Style="{StaticResource ModernCard}" Margin="20,10,20,20">
-            <Grid Margin="20">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Grid Grid.Row="0" Margin="0,0,0,15">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Text="Your Investments" FontSize="20" FontWeight="SemiBold"/>
-
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <TextBox Width="200" Margin="0,0,10,0"
-                                 materialDesign:HintAssist.Hint="Search investments..."
-                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
-
-                        <ComboBox Width="120" materialDesign:HintAssist.Hint="Sort by"
-                                 Style="{StaticResource MaterialDesignOutlinedComboBox}">
+                        <ComboBox Width="Auto" materialDesign:HintAssist.Hint="Sort by"
+                                Style="{StaticResource MaterialDesignOutlinedComboBox}">
                             <ComboBoxItem Content="Value ↑"/>
                             <ComboBoxItem Content="Value ↓"/>
                             <ComboBoxItem Content="Change ↑"/>
                             <ComboBoxItem Content="Change ↓"/>
                         </ComboBox>
                     </StackPanel>
+
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="PortfolioStockListBinding">
+                            <!-- Replace the existing ItemsControl.ItemTemplate section with this updated version -->
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource ModernCard}" 
+                Margin="0,0,0,12" 
+                Padding="16"
+                MouseLeftButtonUp="Border_MouseLeftButtonUp">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Left Side: Stock Info and Performance -->
+                                            <StackPanel Grid.Column="0" >
+                                                <!-- Header -->
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!-- Stock Identity -->
+                                                    <StackPanel Grid.Column="0">
+                                                        <TextBlock Text="{Binding TickerSymbol}" 
+                                     FontSize="22" 
+                                     FontWeight="Bold"/>
+                                                        <TextBlock Text="{Binding CompanyName}" 
+                                     Foreground="#666666" 
+                                     FontSize="14"
+                                     Margin="0,4,0,0"/>
+                                                    </StackPanel>
+
+                                                    <!-- Change Indicators -->
+                                                    <StackPanel Grid.Column="1" 
+                                  HorizontalAlignment="Right"
+                                  Orientation="Horizontal"
+                                  >
+                                                        <TextBlock Text="{Binding PriceChange, StringFormat=+$0.00;-$0.00;$0.00}"
+                                     FontWeight="SemiBold"
+                                     FontSize="16"
+                                     Foreground="{Binding PriceChangeColor}"/>
+                                                        <TextBlock Text="{Binding PercentChange, StringFormat=(+0.00\%;-0.00\%;0.00\%)}"
+                                     FontWeight="SemiBold"
+                                     FontSize="16"
+                                     Foreground="{Binding PercentChangeColor}"/>
+                                                    </StackPanel>
+                                                </Grid>
+
+                                                <!-- Performance Metrics -->
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!-- Quantity -->
+                                                    <StackPanel Grid.Column="0">
+                                                        <TextBlock Text="Quantity" 
+                                     Foreground="#666666"
+                                     FontSize="12"/>
+                                                        <TextBlock Text="{Binding Quantity}" 
+                                     FontWeight="SemiBold"
+                                     FontSize="16"
+                                     Margin="0,4,0,0"/>
+                                                    </StackPanel>
+
+                                                    <!-- Average Cost -->
+                                                    <StackPanel Grid.Column="1">
+                                                        <TextBlock Text="Avg. Cost" 
+                                     Foreground="#666666"
+                                     FontSize="12"/>
+                                                        <TextBlock Text="{Binding PurchasePrice, StringFormat=C}" 
+                                     FontWeight="SemiBold"
+                                     FontSize="16"
+                                     Margin="0,4,0,0"/>
+                                                    </StackPanel>
+
+                                                    <!-- Current Value -->
+                                                    <StackPanel Grid.Column="2">
+                                                        <TextBlock Text="Total Value" 
+                                     Foreground="#666666"
+                                     FontSize="12"/>
+                                                        <TextBlock Text="{Binding TotalValue, StringFormat=C}" 
+                                     FontWeight="SemiBold"
+                                     FontSize="16"
+                                     Margin="0,4,0,0"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </StackPanel>
+
+                                            <!-- Right Side: Actions -->
+                                            <StackPanel Grid.Column="1" 
+                          Orientation="Horizontal" 
+                          VerticalAlignment="Top"
+                          Margin="16,0,0,0">
+
+
+                                                <Button Style="{StaticResource MaterialDesignIconButton}"
+                            Width="36" Height="36"
+                            Padding="0"
+                            Background="#FFF4F4"
+                            BorderBrush="#FFE0E0"
+                            Foreground="#D32F2F"
+                            Click="SellStock"
+                            ToolTip="Sell Position">
+                                                    <materialDesign:PackIcon Kind="Close" 
+                                               Width="20" 
+                                               Height="20"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </Grid>
+            </Border>
 
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" MaxHeight="400">
-                    <ItemsControl x:Name="PortfolioStockListBinding">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Style="{StaticResource ModernCard}" 
-                                        Margin="0,5,0,10" 
-                                        MouseLeftButtonUp="Border_MouseLeftButtonUp">
-                                    <Grid >
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
+            <!-- Chart Section (Right Side) -->
+            <Border Grid.Column="1" Style="{StaticResource ModernCard}" Margin="10,0,0,0">
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                                        <!-- Stock Info -->
-                                        <StackPanel Grid.Column="0" Width="200">
-                                            <TextBlock Text="{Binding TickerSymbol}" 
-                                                       FontSize="18" FontWeight="Bold"/>
-                                            <TextBlock Text="{Binding CompanyName}" 
-                                                       Foreground="#666" Margin="0,5"/>
-                                        </StackPanel>
 
-                                        <!-- Performance Metrics -->
-                                        <UniformGrid Grid.Column="1" Rows="2" Columns="4">
-                                            <StackPanel Margin="10,0">
-                                                <TextBlock Text="Quantity" Foreground="#666"/>
-                                                <TextBlock Text="{Binding Quantity}" 
-                                                           FontWeight="SemiBold"/>
-                                            </StackPanel>
+                    <!-- Enhanced Chart -->
+                    <lvc:CartesianChart Grid.Row="1" Name="portfolioChart">
+                        <lvc:CartesianChart.Series>
+                            <lvc:LineSeries Title="Portfolio Value"
+                                           Values="{Binding PortfolioValues}"
+                                           PointGeometrySize="0"
+                                           LineSmoothness="0.5"
+                                           StrokeThickness="3"
+                                           Stroke="#2196F3"
+                                           Fill="#182196F3"/>
+                        </lvc:CartesianChart.Series>
 
-                                            <StackPanel Margin="10,0">
-                                                <TextBlock Text="Avg. Cost" Foreground="#666"/>
-                                                <TextBlock Text="{Binding PurchasePrice, 
-                                                           StringFormat=C}" FontWeight="SemiBold"/>
-                                            </StackPanel>
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis Title="Date"
+                                     Labels="{Binding Dates}"
+                                     LabelsRotation="25"
+                                     Foreground="#666">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator StrokeThickness="1" StrokeDashArray="2" Stroke="#E0E0E0"/>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisX>
 
-                                            <StackPanel Margin="10,0">
-                                                <TextBlock Text="Current" Foreground="#666"/>
-                                                <TextBlock Text="{Binding CurrentPrice, 
-                                                           StringFormat=C}" FontWeight="SemiBold"/>
-                                            </StackPanel>
-
-                                            <StackPanel Margin="10,0">
-                                                <TextBlock Text="Total Value" Foreground="#666"/>
-                                                <TextBlock Text="{Binding TotalValue, 
-                                                           StringFormat=C}" FontWeight="SemiBold"/>
-                                            </StackPanel>
-
-                                            <StackPanel Margin="10,0">
-                                                <TextBlock Text="Price Change" Foreground="#666"/>
-                                                <TextBlock Text="{Binding PriceChange, 
-                                                           StringFormat=+$0.00;-$0.00;$0.00}"
-                                                           Foreground="{Binding PriceChangeColor}"/>
-                                            </StackPanel>
-
-                                            <StackPanel Margin="10,0">
-                                                <TextBlock Text="% Change" Foreground="#666"/>
-                                                <TextBlock Text="{Binding PercentChange, 
-                                                           StringFormat=+0.00\%;-0.00\%;0.00\%}"
-                                                           Foreground="{Binding PercentChangeColor}"/>
-                                            </StackPanel>
-
-                                            <StackPanel Margin="10,0">
-                                                <TextBlock Text="Purchase Date" Foreground="#666"/>
-                                                <TextBlock Text="{Binding PurchaseDate, 
-                                                           StringFormat=yyyy-MM-dd}"/>
-                                            </StackPanel>
-                                        </UniformGrid>
-
-                                        <!-- Actions -->
-                                        <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                            <Button Style="{StaticResource MaterialDesignOutlinedButton}"
-                                                    Margin="5,0" ToolTip="Edit Position"
-                                                    Width="40" Height="40" Padding="0">
-                                                <materialDesign:PackIcon Kind="Edit" Width="20" Height="20"/>
-                                            </Button>
-
-                                            <Button Style="{StaticResource MaterialDesignOutlinedButton}"
-                                                    Background="#FFE0E0" BorderBrush="#FFE0E0"
-                                                    Foreground="#D32F2F" Click="SellStock"
-                                                    Width="40" Height="40" Padding="0"
-                                                    ToolTip="Sell Position">
-                                                <materialDesign:PackIcon Kind="Close" Width="20" Height="20"/>
-                                            </Button>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Grid>
-        </Border>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="Value ($)"
+                                     LabelFormatter="{Binding ValueFormatter}"
+                                     Foreground="#666">
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator StrokeThickness="1" StrokeDashArray="2" Stroke="#E0E0E0"/>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </Grid>
+            </Border>
+        </Grid>
 
         <!-- Add Investment Dialog -->
         <materialDesign:DialogHost x:Name="AddInvestmentDialogHost">
             <materialDesign:DialogHost.DialogContent>
-                <!-- Continuing from the Add Investment Dialog section -->
                 <Border Style="{StaticResource ModernCard}" Width="480">
                     <Grid Margin="30">
                         <Grid.RowDefinitions>
@@ -304,7 +310,6 @@
 
                         <!-- Form Fields -->
                         <StackPanel Grid.Row="1" Margin="0,10">
-                            <!-- Stock Symbol with Auto-Complete -->
                             <TextBox x:Name="StockSymbolTextBox"
                                     materialDesign:HintAssist.Hint="Stock Symbol"
                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
@@ -313,7 +318,6 @@
                                     CharacterCasing="Upper"
                                     Margin="0,0,0,15"/>
 
-                            <!-- Quantity with Stepper -->
                             <Grid Margin="0,0,0,15">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -339,7 +343,6 @@
                                 </StackPanel>
                             </Grid>
 
-                            <!-- Purchase Date Picker -->
                             <DatePicker x:Name="InvestmentDatePicker"
                                       materialDesign:HintAssist.Hint="Purchase Date"
                                       Style="{StaticResource MaterialDesignOutlinedDatePicker}"
@@ -347,7 +350,6 @@
                                       SelectedDateChanged="InvestmentDatePicker_SelectedDateChanged"
                                       Margin="0,0,0,15"/>
 
-                            <!-- Price with Market Price Fetch -->
                             <Grid Margin="0,0,0,15">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -363,7 +365,7 @@
 
                                 <Button Grid.Column="1" Margin="10,0,0,0"
                                         Style="{StaticResource MaterialDesignOutlinedButton}"
-                                        Click="FetchMarketPrice"
+                                        Click="Refersh"
                                         ToolTip="Fetch Current Market Price">
                                     <materialDesign:PackIcon Kind="Refresh"/>
                                 </Button>

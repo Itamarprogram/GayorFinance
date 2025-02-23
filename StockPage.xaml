@@ -13,6 +13,19 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+        <Button Style="{StaticResource MaterialDesignIconButton}"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        Width="48"
+        Height="48"
+        Margin="20,20,0,0"
+        Click="NavigateBack_Click"
+        Panel.ZIndex="1">
+            <materialDesign:PackIcon Kind="ArrowLeft"
+                           Width="24"
+                           Height="24"/>
+        </Button>
+
         <!-- Header with stock information -->
         <materialDesign:Card Grid.Row="0" Margin="20,20,20,10" UniformCornerRadius="15">
             <Grid Margin="20">

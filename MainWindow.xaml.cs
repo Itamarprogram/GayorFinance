@@ -57,7 +57,7 @@ namespace GayorFinance
             var stockPage = new StockPage(symbol, apiClient);
             MainFrame.NavigationService.Navigate(stockPage);
         }
-        private void NavigateToLandingPage()
+        public void NavigateToLandingPage()
         {
             // Resolve the ApiClient instance from DI
             var apiClient = _serviceProvider.GetRequiredService<ApiClient>();
@@ -80,5 +80,7 @@ namespace GayorFinance
         {
             MainFrame.NavigationService.Navigate(new Settings());
         }
+
+
     }
 }

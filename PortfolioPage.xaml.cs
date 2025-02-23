@@ -21,6 +21,8 @@ using ViewModel;
             private Portfolio _selectedPortfolio;
             private HistoricalDataResponse quote;
             private StockQuote latestQuote;
+            public int count = 0;
+            public decimal TotalInvestmentPreview = 0;
             public double TotalCurrentValue { get; private set; }
             public double TotalPercentChange { get; private set; }
 
@@ -33,10 +35,15 @@ using ViewModel;
                 _apiClient = apiClient;
                 _selectedPortfolio = selectedPortfolio;
                 DataContext = this;
-                LoadStocks();
-            }
+            // Initialize chart data
+            PortfolioValues = new ChartValues<double>();
+            Dates = new List<string>();
 
-            private async void LoadStocks()
+            // Load data asynchronously
+            Loaded += async (s, e) => await LoadStocks();
+        }
+
+            private async Task LoadStocks()
             {
 
                 try
@@ -106,102 +113,89 @@ using ViewModel;
         {
             try
             {
-                // Determine the date range: from the earliest purchase date to today.
-                DateTime startDate = await GetEarliestPurchaseDate();
-                DateTime today = DateTime.Today;
-
-                // Clear any existing values
+                // Clear existing data
                 PortfolioValues.Clear();
                 Dates.Clear();
 
-                // Get all stocks for this portfolio.
+                DateTime startDate = await GetEarliestPurchaseDate();
+                DateTime today = DateTime.Today;
+
+                // Get all stocks for this portfolio
                 List<PortfolioStocks> allStocks = await FindAllPortfolioStocksByPortfolioId(_selectedPortfolio.Id);
 
-                // Create a dictionary to hold historical quotes for each stock,
-                // keyed by ticker symbol.
+                // Pre-fetch all historical data at once
                 var stockHistoricalData = new Dictionary<string, List<HistoricalQuote>>();
 
                 foreach (var stock in allStocks)
                 {
-                    // Fetch historical data for the stock from its purchase date to today.
+                    // Ensure we get data from purchase date to today for each stock
                     var historicalResponse = await _apiClient.GetStockQuoteHistoricalDataFromADate(
                         stock.TickerSymbol,
                         stock.PurchaseDate.ToString("yyyy-MM-dd"),
                         today.ToString("yyyy-MM-dd")
                     );
 
-                    if (historicalResponse != null && historicalResponse.Historical != null)
+                    if (historicalResponse?.Historical != null)
                     {
-                        // Sort the historical data in ascending order by date.
-                        var sortedHistorical = historicalResponse.Historical
+                        stockHistoricalData[stock.TickerSymbol] = historicalResponse.Historical
                             .OrderBy(h => DateTime.Parse(h.Date))
                             .ToList();
-
-                        stockHistoricalData[stock.TickerSymbol] = sortedHistorical;
                     }
                 }
 
-                // This variable will hold the previous day's portfolio value
-                // to carry forward if needed.
-                double previousTotal = 0;
-
-                // Iterate day-by-day from the earliest purchase date to today.
+                // Process day by day
+                double previousValue = 0;
                 for (DateTime date = startDate; date <= today; date = date.AddDays(1))
                 {
                     double dailyTotal = 0;
 
-                    // Optional: if the day is a weekend or a market holiday, 
-                    // simply use the previous day's total (or you could choose to skip it).
+                    // Skip weekends and holidays but maintain the previous value
                     if (IsMarketHoliday(date))
                     {
-                        PortfolioValues.Add(previousTotal);
+                        PortfolioValues.Add(previousValue);
                         Dates.Add(date.ToString("yyyy-MM-dd"));
                         continue;
                     }
 
-                    // Sum up the value for each stock for the current day.
                     foreach (var stock in allStocks)
                     {
-                        // Only include stocks that have already been purchased.
-                        if (stock.PurchaseDate > date)
-                            continue;
-
-                        if (stockHistoricalData.ContainsKey(stock.TickerSymbol))
+                        // Only include stocks that were purchased on or before this date
+                        if (stock.PurchaseDate <= date && stockHistoricalData.ContainsKey(stock.TickerSymbol))
                         {
-                            // Get the quotes available for this stock up to the current day.
-                            var availableQuotes = stockHistoricalData[stock.TickerSymbol]
-                                .Where(h => DateTime.Parse(h.Date) <= date)
-                                .ToList();
+                            var stockQuotes = stockHistoricalData[stock.TickerSymbol];
+                            var relevantQuote = stockQuotes
+                                .Where(q => DateTime.Parse(q.Date) <= date)
+                                .OrderByDescending(q => DateTime.Parse(q.Date))
+                                .FirstOrDefault();
 
-                            if (availableQuotes.Any())
+                            if (relevantQuote != null)
                             {
-                                // Use the latest available quote up to the current day.
-                                var latestQuote = availableQuotes.Last();
-                                dailyTotal += stock.Quantity * latestQuote.Close;
+                                dailyTotal += stock.Quantity * relevantQuote.Close;
                             }
                             else
                             {
-                                // If there are no quotes (which might occur on the day of purchase if the API hasn't updated),
-                                // you might consider using the purchase price or simply skipping it.
+                                // If no quote is available, use purchase price
                                 dailyTotal += stock.Quantity * (double)stock.PurchasePrice;
                             }
                         }
                     }
 
-                    // Save the computed total for the day.
                     PortfolioValues.Add(dailyTotal);
                     Dates.Add(date.ToString("yyyy-MM-dd"));
-                    previousTotal = dailyTotal;
+                    previousValue = dailyTotal;
                 }
 
-                // Update the chart with the new values.
-                portfolioChart.Series[0].Values = PortfolioValues;
-                portfolioChart.AxisX[0].Labels = Dates;
+                // Update the chart
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    portfolioChart.Series[0].Values = new ChartValues<double>(PortfolioValues);
+                    portfolioChart.AxisX[0].Labels = new List<string>(Dates);
+                    portfolioChart.Update(true);
+                });
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error loading portfolio history: {ex.Message}");
-                MessageBox.Show("Error loading portfolio history: " + ex.Message);
+
             }
         }
 
@@ -252,53 +246,73 @@ using ViewModel;
                 AddInvestmentDialogHost.IsOpen = false;
             }
 
-            private async void AddInvestment(object sender, RoutedEventArgs e)
+        private async void AddInvestment(object sender, RoutedEventArgs e)
+        {
+            try
             {
-                try
+                AddInvestmentDialogHost.IsOpen = false;  // Close dialog first
+
+                PortfolioStocks portfolioStock = new PortfolioStocks
                 {
+                    PortfolioId = _selectedPortfolio.Id,
+                    TickerSymbol = StockSymbolTextBox.Text,
+                    Quantity = Convert.ToInt32(QuantityTextBox.Text),
+                    PurchasePrice = Convert.ToDecimal(PriceTextBox.Text),
+                    TotalValue = Convert.ToInt32(QuantityTextBox.Text) * Convert.ToDecimal(PriceTextBox.Text),
+                    PurchaseDate = InvestmentDatePicker.SelectedDate ?? DateTime.Today
+                };
 
-                    PortfolioStocks portfolioStock = new PortfolioStocks
-                    {
-                        PortfolioId = _selectedPortfolio.Id,
-                        TickerSymbol = StockSymbolTextBox.Text,
-                        Quantity = Convert.ToInt32(QuantityTextBox.Text),
-                        PurchasePrice = Convert.ToDecimal(PriceTextBox.Text),
-                        TotalValue = Convert.ToInt32(QuantityTextBox.Text) * Convert.ToDecimal(PriceTextBox.Text),
-                        PurchaseDate = InvestmentDatePicker.SelectedDate ?? DateTime.Today
-                    };
+                ApiService apiService = new ApiService();
+                int result = await apiService.InsertPortfolioStocks(portfolioStock);
 
-                    ApiService apiService = new ApiService();
-                    int result = await apiService.InsertPortfolioStocks(portfolioStock);
-                    if (result == 1)
-                    {
-                        MessageBox.Show("Investment successfully added!");
-                        LoadStocks();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Failed to add investment.");
-                    }
-                }
-                catch (Exception ex)
+                if (result == 1)
                 {
-                    MessageBox.Show("Error adding investment: " + ex.Message);
-                }
-                AddInvestmentDialogHost.IsOpen = false;
+                    // Clear the chart data first
+                    PortfolioValues.Clear();
+                    Dates.Clear();
 
+                    // Force UI update
+                    await Dispatcher.InvokeAsync(async () =>
+                    {
+                        await LoadStocks(); // This will call LoadPortfolioHistory
+
+                        // Force chart refresh
+                        portfolioChart.Update(true);
+                        RefreshChart(); // Add this line
+
+                    });
+
+                    MessageBox.Show("Investment successfully added!");
+                }
+                else
+                {
+                    MessageBox.Show("Failed to add investment.");
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error adding investment: " + ex.Message);
+            }
+        }
+
 
         private async void InvestmentDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (InvestmentDatePicker.SelectedDate != null)
             {
-                if (InvestmentDatePicker.SelectedDate != null)
+                await GetStockData();
+                if (quote?.Historical != null && quote.Historical.Count > 0)
                 {
-                    await GetStockData();
-                    if (quote?.Historical != null && quote.Historical.Count > 0)
-                    {
-                        HistoricalQuote latestData = quote.Historical[0];
-                        PriceTextBox.Text = latestData.Close.ToString();
-                    }
+                    HistoricalQuote latestData = quote.Historical[0];
+                    PriceTextBox.Text = latestData.Close.ToString();
                 }
+                TotalInvestmentPreview = (long)(Convert.ToInt32(QuantityTextBox.Text) * Convert.ToDecimal(PriceTextBox.Text));
             }
+            else
+            {
+                // Handle the case where no date is selected
+            }
+        }
 
             private async Task GetStockData()
             {
@@ -323,31 +337,40 @@ using ViewModel;
             }
 
 
-            private async void SellStock(object sender, RoutedEventArgs e)
+        private async void SellStock(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is PortfolioStockDisplay stock)
             {
-
-                if (sender is Button button && button.DataContext is PortfolioStockDisplay stock)
+                try
                 {
-                    try
+                    ApiService apiService = new ApiService();
+                    int isDeleted = await apiService.DeletePortfolioStocks(stock.Id);
+                    if (isDeleted == 1)
                     {
-                        ApiService apiService = new ApiService();
-                        int isDeleted = await apiService.DeletePortfolioStocks(stock.Id);
-                        if (isDeleted == 1)
-                        {
-                            MessageBox.Show("Stock deleted successfully.");
-                            LoadStocks();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Failed to delete stock.");
-                        }
+                        MessageBox.Show("Stock deleted successfully.");
+                        RefreshChart(); // Add this line
+                        await LoadPortfolioHistory(); // <-- ADD THIS LINE
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        MessageBox.Show("Error deleting stock: " + ex.Message);
+                        MessageBox.Show("Failed to delete stock.");
                     }
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error deleting stock: " + ex.Message);
+                }
             }
+        }
+        private void RefreshChart()
+        {
+            // Force chart to clear and redraw
+            portfolioChart.Series[0].Values = null;
+            portfolioChart.Series[0].Values = new ChartValues<double>(PortfolioValues);
+            portfolioChart.AxisX[0].Labels = null;
+            portfolioChart.AxisX[0].Labels = Dates;
+        }
+
 
         private void portfolioChart_Loaded(object sender, RoutedEventArgs e)
         {
@@ -356,6 +379,18 @@ using ViewModel;
 
         private void DecrementQuantity(object sender, RoutedEventArgs e)
         {
+            string quantity = QuantityTextBox.Text;
+
+            if (Convert.ToInt32(quantity) > 0)
+            {
+                count--;
+                QuantityTextBox.Text = (Convert.ToInt32(quantity) - 1).ToString();
+
+            }
+            else
+            {
+                count = 0;
+            }
 
         }
 
@@ -364,19 +399,50 @@ using ViewModel;
 
         }
 
-        private void FetchMarketPrice(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void IncrementQuantity(object sender, RoutedEventArgs e)
         {
+            
+            string quantity = QuantityTextBox.Text;
+            if (quantity == "" || Convert.ToInt32(quantity) == 0)
+            {
+                count = 1;
+                QuantityTextBox.Text = (Convert.ToInt32(quantity) + 1).ToString();
+
+            }
+            else if(quantity == "0")
+            {
+                QuantityTextBox.Text = "1";
+            }
+            else
+            {
+                count++;
+                QuantityTextBox.Text = (Convert.ToInt32(quantity) + 1).ToString();
+
+
+            }
 
         }
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
 
+        }
+
+        private void Refersh(object sender, RoutedEventArgs e)
+        {
+            InvestmentDatePicker.SelectedDate = null;
+            StockSymbolTextBox.Text = "";
+            QuantityTextBox.Text = "";
+            PriceTextBox.Text = "";
+            TotalInvestmentPreview = 0;
+            quote = null;
+            latestQuote = null;
+        }
+
+        private void NavigateBack_Click(object sender, RoutedEventArgs e)
+        {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            mainWindow.NavigateToLandingPage();
         }
     }
     }

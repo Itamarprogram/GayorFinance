@@ -5,14 +5,30 @@
       Title="Settings">
 
     <ScrollViewer>
+
         <Grid Background="{DynamicResource MaterialDesignPaper}" MaxWidth="800">
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <Button Style="{StaticResource MaterialDesignIconButton}"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        Width="48"
+        Height="30"
+        Margin="20,20,0,0"
+        Click="NavigateBack_Click"
+        Panel.ZIndex="1">
+                <materialDesign:PackIcon Kind="ArrowLeft"
+                           Width="24"
+                           Height="24" RenderTransformOrigin="9.233,0.983"/>
+            </Button>
+
+
             <!-- Header -->
-            <materialDesign:Card Grid.Row="0" Margin="20,20,20,0" UniformCornerRadius="15">
+            <materialDesign:Card Grid.Row="0" Margin="20,20,20,1027" UniformCornerRadius="15" Grid.RowSpan="2">
                 <Grid Margin="20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>

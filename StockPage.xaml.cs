@@ -428,5 +428,11 @@ namespace GayorFinance
             DataContext = this;
 
         }
+
+        private void NavigateBack_Click(object sender, RoutedEventArgs e)
+        {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            mainWindow.NavigateToLandingPage();
+        }
     }
 }
