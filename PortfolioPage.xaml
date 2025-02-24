@@ -44,28 +44,24 @@
     </Page.Resources>
 
     <Grid Background="#F5F7FA">
-        
-        
-        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+
+        <!-- Back Button -->
         <Button Style="{StaticResource MaterialDesignIconButton}"
-        HorizontalAlignment="Left"
-        VerticalAlignment="Top"
-        Width="48"
-        Height="48"
-        Margin="20,20,0,0"
-        Click="NavigateBack_Click"
-        Panel.ZIndex="1">
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Width="48"
+                Height="48"
+                Margin="20,20,0,0"
+                Click="NavigateBack_Click"
+                Panel.ZIndex="1">
             <materialDesign:PackIcon Kind="ArrowLeft"
-                           Width="24"
-                           Height="24"/>
+                                     Width="24"
+                                     Height="24"/>
         </Button>
-
-
-
 
         <!-- Header Section -->
         <Border Grid.Row="0" Style="{StaticResource ModernCard}" Margin="20,20,20,10" Padding="20">
@@ -125,7 +121,6 @@
 
                     <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                         <ItemsControl x:Name="PortfolioStockListBinding">
-                            <!-- Replace the existing ItemsControl.ItemTemplate section with this updated version -->
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Style="{StaticResource ModernCard}" 
@@ -133,110 +128,120 @@
                 Padding="16"
                 MouseLeftButtonUp="Border_MouseLeftButtonUp">
                                         <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
 
-                                            <!-- Left Side: Stock Info and Performance -->
-                                            <StackPanel Grid.Column="0" >
-                                                <!-- Header -->
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                    </Grid.ColumnDefinitions>
-
-                                                    <!-- Stock Identity -->
-                                                    <StackPanel Grid.Column="0">
-                                                        <TextBlock Text="{Binding TickerSymbol}" 
-                                     FontSize="22" 
-                                     FontWeight="Bold"/>
-                                                        <TextBlock Text="{Binding CompanyName}" 
-                                     Foreground="#666666" 
-                                     FontSize="14"
-                                     Margin="0,4,0,0"/>
-                                                    </StackPanel>
-
-                                                    <!-- Change Indicators -->
-                                                    <StackPanel Grid.Column="1" 
-                                  HorizontalAlignment="Right"
-                                  Orientation="Horizontal"
-                                  >
-                                                        <TextBlock Text="{Binding PriceChange, StringFormat=+$0.00;-$0.00;$0.00}"
-                                     FontWeight="SemiBold"
-                                     FontSize="16"
-                                     Foreground="{Binding PriceChangeColor}"/>
-                                                        <TextBlock Text="{Binding PercentChange, StringFormat=(+0.00\%;-0.00\%;0.00\%)}"
-                                     FontWeight="SemiBold"
-                                     FontSize="16"
-                                     Foreground="{Binding PercentChangeColor}"/>
-                                                    </StackPanel>
-                                                </Grid>
-
-                                                <!-- Performance Metrics -->
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                    </Grid.ColumnDefinitions>
-
-                                                    <!-- Quantity -->
-                                                    <StackPanel Grid.Column="0">
-                                                        <TextBlock Text="Quantity" 
-                                     Foreground="#666666"
-                                     FontSize="12"/>
-                                                        <TextBlock Text="{Binding Quantity}" 
-                                     FontWeight="SemiBold"
-                                     FontSize="16"
-                                     Margin="0,4,0,0"/>
-                                                    </StackPanel>
-
-                                                    <!-- Average Cost -->
-                                                    <StackPanel Grid.Column="1">
-                                                        <TextBlock Text="Avg. Cost" 
-                                     Foreground="#666666"
-                                     FontSize="12"/>
-                                                        <TextBlock Text="{Binding PurchasePrice, StringFormat=C}" 
-                                     FontWeight="SemiBold"
-                                     FontSize="16"
-                                     Margin="0,4,0,0"/>
-                                                    </StackPanel>
-
-                                                    <!-- Current Value -->
-                                                    <StackPanel Grid.Column="2">
-                                                        <TextBlock Text="Total Value" 
-                                     Foreground="#666666"
-                                     FontSize="12"/>
-                                                        <TextBlock Text="{Binding TotalValue, StringFormat=C}" 
-                                     FontWeight="SemiBold"
-                                     FontSize="16"
-                                     Margin="0,4,0,0"/>
-                                                    </StackPanel>
-                                                </Grid>
-                                            </StackPanel>
-
-                                            <!-- Right Side: Actions -->
-                                            <StackPanel Grid.Column="1" 
-                          Orientation="Horizontal" 
-                          VerticalAlignment="Top"
-                          Margin="16,0,0,0">
+                                            <!-- Top Row -->
+                                            <Grid Grid.Row="0" Margin="0,0,0,12">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
 
 
-                                                <Button Style="{StaticResource MaterialDesignIconButton}"
-                            Width="36" Height="36"
-                            Padding="0"
-                            Background="#FFF4F4"
-                            BorderBrush="#FFE0E0"
-                            Foreground="#D32F2F"
-                            Click="SellStock"
-                            ToolTip="Sell Position">
-                                                    <materialDesign:PackIcon Kind="Close" 
-                                               Width="20" 
-                                               Height="20"/>
-                                                </Button>
-                                            </StackPanel>
+
+                                                <!-- Stock Symbol and Name -->
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding TickerSymbol}"
+                                 FontSize="16"
+                                 FontWeight="SemiBold"/>
+                                                </StackPanel>
+
+                                                <!-- Current Price -->
+                                                <TextBlock Grid.Column="2"
+                             Text="{Binding CurrentPrice, StringFormat=${0:N2}}"
+                             FontSize="16"
+                             FontWeight="SemiBold"
+                             Margin="8,0"
+                             VerticalAlignment="Center"/>
+
+                                                <!-- Quantity -->
+                                                <StackPanel Grid.Column="3" Orientation="Horizontal" 
+                              Margin="8,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Quantity}"
+                                 FontSize="16"
+                                 FontWeight="SemiBold"/>
+                                                    <Button Style="{StaticResource MaterialDesignIconButton}"
+                                Width="24" Height="24"
+                                Padding="0"
+                                Margin="4,0,0,0">
+                                                        <materialDesign:PackIcon Kind="Pencil" 
+                                                   Width="16" 
+                                                   Height="16"/>
+                                                    </Button>
+                                                </StackPanel>
+
+                                                <!-- Day Change -->
+                                                <StackPanel Grid.Column="4" 
+                              Orientation="Horizontal"
+                              Margin="8,0">
+                                                    <TextBlock Text="{Binding PriceChange, StringFormat=${0:N2}}"
+                                 Foreground="{Binding PriceChangeColor}"
+                                 FontSize="16"
+                                 FontWeight="SemiBold"
+                                 Margin="0,0,8,0"/>
+                                                    <TextBlock Text="{Binding PercentChange, StringFormat={}{0:N2}%}"
+                                 Foreground="{Binding PercentChangeColor}"
+                                 FontSize="16"
+                                 FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Bottom Row -->
+                                            <Grid Grid.Row="1">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Purchase Date -->
+                                                <StackPanel Grid.Column="0" Margin="0,0,24,0">
+                                                    <TextBlock Text="PURCHASE DATE"
+                                 Foreground="#666666"
+                                 FontSize="12"/>
+                                                    <TextBlock Text="{Binding PurchaseDate, StringFormat={}{0:MM/dd/yyyy}}"
+                                                               FontSize="14"
+                                                               FontWeight="SemiBold"/>
+                                                </StackPanel>
+
+                                                <!-- Purchase Price -->
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="PURCHASE PRICE"
+                                 Foreground="#666666"
+                                 FontSize="12"/>
+                                                    <TextBlock Text="{Binding PurchasePrice, StringFormat=${0:N2}}"
+                                 FontSize="14"
+                                 FontWeight="SemiBold"/>
+                                                </StackPanel>
+
+                                                <!-- Total Gain -->
+                                                <StackPanel Grid.Column="2" Margin="0,0,24,0">
+                                                    <TextBlock Text="TOTAL GAIN"
+                                 Foreground="#666666"
+                                 FontSize="12"/>
+                                                    <TextBlock Text="{Binding TotalGain, StringFormat=${0:N2}}"
+                                 Foreground="{Binding TotalGainColor}"
+                                 FontSize="14"
+                                 FontWeight="SemiBold"/>
+                                                </StackPanel>
+
+                                                <!-- Value -->
+                                                <StackPanel Grid.Column="3">
+                                                    <TextBlock Text="VALUE"
+                                 Foreground="#666666"
+                                 FontSize="12"/>
+                                                    <TextBlock Text="{Binding TotalValue, StringFormat=${0:N2}}"
+                                 FontSize="14"
+                                 FontWeight="SemiBold"/>
+                                                </StackPanel>
+                                            </Grid>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -254,24 +259,23 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-
                     <!-- Enhanced Chart -->
                     <lvc:CartesianChart Grid.Row="1" Name="portfolioChart">
                         <lvc:CartesianChart.Series>
                             <lvc:LineSeries Title="Portfolio Value"
-                                           Values="{Binding PortfolioValues}"
-                                           PointGeometrySize="0"
-                                           LineSmoothness="0.5"
-                                           StrokeThickness="3"
-                                           Stroke="#2196F3"
-                                           Fill="#182196F3"/>
+                                            Values="{Binding PortfolioValues}"
+                                            PointGeometrySize="0"
+                                            LineSmoothness="0.5"
+                                            StrokeThickness="3"
+                                            Stroke="#2196F3"
+                                            Fill="#182196F3"/>
                         </lvc:CartesianChart.Series>
 
                         <lvc:CartesianChart.AxisX>
                             <lvc:Axis Title="Date"
-                                     Labels="{Binding Dates}"
-                                     LabelsRotation="25"
-                                     Foreground="#666">
+                                      Labels="{Binding Dates}"
+                                      LabelsRotation="25"
+                                      Foreground="#666">
                                 <lvc:Axis.Separator>
                                     <lvc:Separator StrokeThickness="1" StrokeDashArray="2" Stroke="#E0E0E0"/>
                                 </lvc:Axis.Separator>
@@ -280,8 +284,8 @@
 
                         <lvc:CartesianChart.AxisY>
                             <lvc:Axis Title="Value ($)"
-                                     LabelFormatter="{Binding ValueFormatter}"
-                                     Foreground="#666">
+                                      LabelFormatter="{Binding ValueFormatter}"
+                                      Foreground="#666">
                                 <lvc:Axis.Separator>
                                     <lvc:Separator StrokeThickness="1" StrokeDashArray="2" Stroke="#E0E0E0"/>
                                 </lvc:Axis.Separator>
@@ -305,18 +309,18 @@
 
                         <!-- Dialog Header -->
                         <TextBlock Grid.Row="0" Text="Add New Investment" 
-                                 FontSize="24" FontWeight="Bold" 
-                                 Margin="0,0,0,20"/>
+                                   FontSize="24" FontWeight="Bold" 
+                                   Margin="0,0,0,20"/>
 
                         <!-- Form Fields -->
                         <StackPanel Grid.Row="1" Margin="0,10">
                             <TextBox x:Name="StockSymbolTextBox"
-                                    materialDesign:HintAssist.Hint="Stock Symbol"
-                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                    materialDesign:TextFieldAssist.HasClearButton="True"
-                                    materialDesign:TextFieldAssist.PrefixText="$"
-                                    CharacterCasing="Upper"
-                                    Margin="0,0,0,15"/>
+                                     materialDesign:HintAssist.Hint="Stock Symbol"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     materialDesign:TextFieldAssist.HasClearButton="True"
+                                     materialDesign:TextFieldAssist.PrefixText="$"
+                                     CharacterCasing="Upper"
+                                     Margin="0,0,0,15"/>
 
                             <Grid Margin="0,0,0,15">
                                 <Grid.ColumnDefinitions>
@@ -325,13 +329,13 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBox x:Name="QuantityTextBox"
-                                        Grid.Column="0"
-                                        materialDesign:HintAssist.Hint="Quantity"
-                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                        PreviewTextInput="NumberValidationTextBox"/>
+                                         Grid.Column="0"
+                                         materialDesign:HintAssist.Hint="Quantity"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         PreviewTextInput="NumberValidationTextBox"/>
 
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" 
-                                          Margin="10,0,0,0">
+                                            Margin="10,0,0,0">
                                     <Button Style="{StaticResource MaterialDesignIconButton}"
                                             Click="DecrementQuantity">
                                         <materialDesign:PackIcon Kind="Minus"/>
@@ -344,11 +348,11 @@
                             </Grid>
 
                             <DatePicker x:Name="InvestmentDatePicker"
-                                      materialDesign:HintAssist.Hint="Purchase Date"
-                                      Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                                      materialDesign:TextFieldAssist.HasClearButton="True"
-                                      SelectedDateChanged="InvestmentDatePicker_SelectedDateChanged"
-                                      Margin="0,0,0,15"/>
+                                        materialDesign:HintAssist.Hint="Purchase Date"
+                                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                        materialDesign:TextFieldAssist.HasClearButton="True"
+                                        SelectedDateChanged="InvestmentDatePicker_SelectedDateChanged"
+                                        Margin="0,0,0,15"/>
 
                             <Grid Margin="0,0,0,15">
                                 <Grid.ColumnDefinitions>
@@ -357,11 +361,11 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBox x:Name="PriceTextBox"
-                                        Grid.Column="0"
-                                        materialDesign:HintAssist.Hint="Price per Share"
-                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                        materialDesign:TextFieldAssist.PrefixText="$"
-                                        PreviewTextInput="DecimalValidationTextBox"/>
+                                         Grid.Column="0"
+                                         materialDesign:HintAssist.Hint="Price per Share"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:TextFieldAssist.PrefixText="$"
+                                         PreviewTextInput="DecimalValidationTextBox"/>
 
                                 <Button Grid.Column="1" Margin="10,0,0,0"
                                         Style="{StaticResource MaterialDesignOutlinedButton}"
@@ -376,7 +380,7 @@
                                     Padding="15" Margin="0,0,0,15">
                                 <StackPanel>
                                     <TextBlock Text="Investment Summary" 
-                                             FontWeight="SemiBold" Margin="0,0,0,10"/>
+                                               FontWeight="SemiBold" Margin="0,0,0,10"/>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -384,8 +388,8 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="Total Investment Value"/>
                                         <TextBlock Grid.Column="1" 
-                                                 Text="{Binding TotalInvestmentPreview, 
-                                                 StringFormat=C}" FontWeight="Bold"/>
+                                                   Text="{Binding TotalInvestmentPreview, 
+                                                   StringFormat=C}" FontWeight="Bold"/>
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -393,7 +397,7 @@
 
                         <!-- Action Buttons -->
                         <StackPanel Grid.Row="2" Orientation="Horizontal" 
-                                  HorizontalAlignment="Right" Margin="0,20,0,0">
+                                    HorizontalAlignment="Right" Margin="0,20,0,0">
                             <Button Style="{StaticResource MaterialDesignOutlinedButton}"
                                     Content="Cancel"
                                     Click="CloseAddInvestmentDialog"

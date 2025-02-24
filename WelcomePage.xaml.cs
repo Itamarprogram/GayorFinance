@@ -9,19 +9,21 @@ namespace GayorFinance
     {
         public WelcomePage()
         {
-            InitializeComponent();
+            InitializeComponent(); // Initialize the components of the page
         }
 
+        // Event handler for the Sign In button click event
         private void SignInButton_Click(object sender, RoutedEventArgs e)
         {
-            var mainWindow = (MainWindow)Application.Current.MainWindow;
-            mainWindow.NavigateToSignIn();
+            var mainWindow = (MainWindow)Application.Current.MainWindow; // Get the main window instance
+            mainWindow.NavigateToSignIn(); // Navigate to the Sign In page
         }
 
+        // Event handler for the Sign Up button click event
         private void SignUpButton_Click(object sender, RoutedEventArgs e)
         {
-            var mainWindow = (MainWindow)Application.Current.MainWindow;
-            mainWindow.NavigateToSignUp();
+            var mainWindow = (MainWindow)Application.Current.MainWindow; // Get the main window instance
+            mainWindow.NavigateToSignUp(); // Navigate to the Sign Up page
         }
     }
 }

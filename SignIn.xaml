@@ -7,6 +7,7 @@
       Title="Sign In">
 
     <Page.Resources>
+        <!-- Storyboard for fade-in animation -->
         <Storyboard x:Key="FadeIn">
             <DoubleAnimation Storyboard.TargetProperty="Opacity"
                            From="0" To="1" Duration="0:0:0.4">
@@ -16,10 +17,12 @@
             </DoubleAnimation>
         </Storyboard>
 
+        <!-- Style for button hover effect -->
         <Style x:Key="HoverButton" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="8"/>
             <Style.Triggers>
+                <!-- Mouse enter trigger for button scale up animation -->
                 <EventTrigger RoutedEvent="MouseEnter">
                     <BeginStoryboard>
                         <Storyboard>
@@ -38,6 +41,7 @@
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
+                <!-- Mouse leave trigger for button scale down animation -->
                 <EventTrigger RoutedEvent="MouseLeave">
                     <BeginStoryboard>
                         <Storyboard>
@@ -70,12 +74,14 @@
         <materialDesign:Card Grid.Row="0" Background="#6366F1">
             <Grid Height="64">
                 <StackPanel Orientation="Horizontal" Margin="24,0">
+                    <!-- Finance icon in the top banner -->
                     <materialDesign:PackIcon Kind="Finance" Width="32" Height="32" Foreground="White" 
                                            VerticalAlignment="Center">
                         <materialDesign:PackIcon.Effect>
                             <DropShadowEffect ShadowDepth="1" BlurRadius="4" Opacity="0.3"/>
                         </materialDesign:PackIcon.Effect>
                     </materialDesign:PackIcon>
+                    <!-- Application title in the top banner -->
                     <TextBlock Text="Gayor Finance" FontSize="24" FontWeight="Medium" Foreground="White" 
                              Margin="12,0,0,0" VerticalAlignment="Center">
                         <TextBlock.Effect>
@@ -100,7 +106,7 @@
                                  Foreground="#718096" HorizontalAlignment="Center" Margin="0,12,0,0"/>
                     </StackPanel>
 
-                    <!-- Email -->
+                    <!-- Email TextBox -->
                     <TextBox x:Name="EmailTextBox" 
                             materialDesign:HintAssist.Hint="Email Address"
                             materialDesign:TextFieldAssist.HasClearButton="True"
@@ -109,8 +115,9 @@
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                             Height="60" Margin="0,8"/>
 
-                    <!-- Password -->
+                    <!-- Password Section -->
                     <Grid Margin="0,8">
+                        <!-- PasswordBox for password input -->
                         <PasswordBox x:Name="PasswordBox"
                                    materialDesign:HintAssist.Hint="Password"
                                    materialDesign:TextFieldAssist.HasClearButton="True"
@@ -118,11 +125,13 @@
                                    materialDesign:TextFieldAssist.UnderlineBrush="#6366F1"
                                    Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
                                    Height="60"/>
+                        <!-- TextBox for visible password input (initially hidden) -->
                         <TextBox x:Name="VisiblePasswordBox"
                                 materialDesign:HintAssist.Hint="Password"
                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                 Height="60"
                                 Visibility="Collapsed"/>
+                        <!-- Button to toggle password visibility -->
                         <Button HorizontalAlignment="Right" Margin="0,0,12,0" 
                                Style="{StaticResource MaterialDesignIconButton}"
                                Click="TogglePasswordVisibility_Click">
@@ -130,10 +139,12 @@
                         </Button>
                     </Grid>
 
-                    <!-- Remember Me & Forgot Password -->
+                    <!-- Remember Me & Forgot Password Section -->
                     <Grid Margin="0,16">
+                        <!-- Remember Me CheckBox -->
                         <CheckBox Content="Remember me" Style="{StaticResource MaterialDesignCheckBox}"
                                 materialDesign:CheckBoxAssist.CheckBoxSize="22"/>
+                        <!-- Forgot Password TextBlock -->
                         <TextBlock Text="Forgot Password?" Foreground="#6366F1" FontWeight="Medium"
                                  HorizontalAlignment="Right" Cursor="Hand"
                                  MouseDown="ForgotPassword_Click"/>
@@ -158,7 +169,7 @@
                         </Button.Background>
                     </Button>
 
-                    <!-- Loading Progress -->
+                    <!-- Loading ProgressBar -->
                     <ProgressBar x:Name="LoadingProgress" 
                                Style="{StaticResource MaterialDesignCircularProgressBar}"
                                Value="0"

@@ -6,6 +6,7 @@
       Title="StockPage">
 
     <Grid Background="#FAFAFA">
+        <!-- Define the row structure of the grid -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -13,6 +14,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+        <!-- Back button to navigate to the previous page -->
         <Button Style="{StaticResource MaterialDesignIconButton}"
         HorizontalAlignment="Left"
         VerticalAlignment="Top"
@@ -72,7 +74,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- 52 Week Range -->
+                <!-- Day Range -->
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="Day Range" FontSize="12" 
                              Foreground="{DynamicResource MaterialDesignBodyLight}"/>
@@ -80,7 +82,7 @@
                              Foreground="{DynamicResource MaterialDesignBody}"/>
                 </StackPanel>
 
-
+                <!-- 52 Week Range -->
                 <StackPanel Grid.Column="1">
                     <TextBlock Text="52 Week Range" FontSize="12" 
                              Foreground="{DynamicResource MaterialDesignBodyLight}"/>
@@ -88,7 +90,7 @@
                              Foreground="{DynamicResource MaterialDesignBody}"/>
                 </StackPanel>
 
-
+                <!-- P/E Ratio -->
                 <StackPanel Grid.Column="2">
                     <TextBlock Text="P/E Ratio" FontSize="12" 
                              Foreground="{DynamicResource MaterialDesignBodyLight}"/>
@@ -96,7 +98,7 @@
                              Foreground="{DynamicResource MaterialDesignBody}"/>
                 </StackPanel>
 
-                <!-- Beta -->
+                <!-- Earnings Announcement -->
                 <StackPanel Grid.Column="3">
                     <TextBlock Text="Earnings Announcement" FontSize="12" 
                              Foreground="{DynamicResource MaterialDesignBodyLight}"/>

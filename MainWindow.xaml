@@ -6,8 +6,10 @@
         xmlns:local="clr-namespace:GayorFinance"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
     
+    <!-- Main grid layout -->
+    <Grid>
+        <!-- Frame for navigation, with hidden navigation UI -->
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"></Frame>
     </Grid>
 </Window>

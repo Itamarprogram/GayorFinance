@@ -13,19 +13,19 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <!-- Back Button -->
             <Button Style="{StaticResource MaterialDesignIconButton}"
-        HorizontalAlignment="Left"
-        VerticalAlignment="Top"
-        Width="48"
-        Height="30"
-        Margin="20,20,0,0"
-        Click="NavigateBack_Click"
-        Panel.ZIndex="1">
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Width="48"
+                    Height="30"
+                    Margin="20,20,0,0"
+                    Click="NavigateBack_Click"
+                    Panel.ZIndex="1">
                 <materialDesign:PackIcon Kind="ArrowLeft"
-                           Width="24"
-                           Height="24" RenderTransformOrigin="9.233,0.983"/>
+                                         Width="24"
+                                         Height="24" RenderTransformOrigin="9.233,0.983"/>
             </Button>
-
 
             <!-- Header -->
             <materialDesign:Card Grid.Row="0" Margin="20,20,20,1027" UniformCornerRadius="15" Grid.RowSpan="2">
@@ -36,14 +36,14 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Profile Picture -->
-
+                    <!-- Placeholder for profile picture -->
 
                     <!-- User Info -->
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                         <TextBlock x:Name="NameDisplay" Text="John Doe" 
-                                 FontSize="24" FontWeight="Bold"/>
+                                   FontSize="24" FontWeight="Bold"/>
                         <TextBlock x:Name="UserEmailDisplay" Text="john.doe@example.com" 
-                                 FontSize="14" Opacity="0.6"/>
+                                   FontSize="14" Opacity="0.6"/>
                     </StackPanel>
                 </Grid>
             </materialDesign:Card>
@@ -54,8 +54,8 @@
                 <materialDesign:Card Margin="0,0,0,20" UniformCornerRadius="15">
                     <StackPanel Margin="20">
                         <TextBlock Text="Personal Information" 
-                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                 Margin="0,0,0,20"/>
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Margin="0,0,0,20"/>
 
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -63,34 +63,39 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
+                            <!-- First Name -->
                             <TextBox x:Name="FirstNameTextBox"
-                                    materialDesign:HintAssist.Hint="First Name"
-                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                    Margin="0,0,10,15"/>
+                                     materialDesign:HintAssist.Hint="First Name"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Margin="0,0,10,15"/>
 
+                            <!-- Last Name -->
                             <TextBox x:Name="LastNameTextBox"
-                                    Grid.Column="1"
-                                    materialDesign:HintAssist.Hint="Last Name"
-                                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                    Margin="10,0,0,15"/>
+                                     Grid.Column="1"
+                                     materialDesign:HintAssist.Hint="Last Name"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Margin="10,0,0,15"/>
                         </Grid>
 
+                        <!-- Email -->
                         <TextBox x:Name="EmailTextBox"
-                                materialDesign:HintAssist.Hint="Email"
-                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                Margin="0,0,0,15"/>
-
-                        <DatePicker x:Name="DateOfBirthPicker"
-                                  materialDesign:HintAssist.Hint="Date of Birth"
-                                  Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                                  Margin="0,0,0,15"/>
-
-                        <ComboBox x:Name="CountryComboBox"
-                                 materialDesign:HintAssist.Hint="Country"
-                                 Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                                 ItemsSource="{Binding CountryList}"
-                                 DisplayMemberPath="CountryName"
+                                 materialDesign:HintAssist.Hint="Email"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                  Margin="0,0,0,15"/>
+
+                        <!-- Date of Birth -->
+                        <DatePicker x:Name="DateOfBirthPicker"
+                                    materialDesign:HintAssist.Hint="Date of Birth"
+                                    Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                    Margin="0,0,0,15"/>
+
+                        <!-- Country -->
+                        <ComboBox x:Name="CountryComboBox"
+                                  materialDesign:HintAssist.Hint="Country"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  ItemsSource="{Binding CountryList}"
+                                  DisplayMemberPath="CountryName"
+                                  Margin="0,0,0,15"/>
                     </StackPanel>
                 </materialDesign:Card>
 
@@ -98,25 +103,26 @@
                 <materialDesign:Card Margin="0,0,0,20" UniformCornerRadius="15">
                     <StackPanel Margin="20">
                         <TextBlock Text="Security" 
-                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                 Margin="0,0,0,20"/>
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Margin="0,0,0,20"/>
 
+                        <!-- Current Password -->
                         <PasswordBox x:Name="CurrentPasswordBox"
-                                   materialDesign:HintAssist.Hint="Current Password"
-                                   Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
-                                   Margin="0,0,0,15"/>
+                                     materialDesign:HintAssist.Hint="Current Password"
+                                     Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                                     Margin="0,0,0,15"/>
 
+                        <!-- New Password -->
                         <PasswordBox x:Name="NewPasswordBox"
-                                   materialDesign:HintAssist.Hint="New Password"
-                                   Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
-                                   Margin="0,0,0,15"/>
+                                     materialDesign:HintAssist.Hint="New Password"
+                                     Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                                     Margin="0,0,0,15"/>
 
+                        <!-- Confirm New Password -->
                         <PasswordBox x:Name="ConfirmPasswordBox"
-                                   materialDesign:HintAssist.Hint="Confirm New Password"
-                                   Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
-                                   Margin="0,0,0,15"/>
-
-
+                                     materialDesign:HintAssist.Hint="Confirm New Password"
+                                     Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                                     Margin="0,0,0,15"/>
                     </StackPanel>
                 </materialDesign:Card>
 
@@ -124,31 +130,35 @@
                 <materialDesign:Card Margin="0,0,0,20" UniformCornerRadius="15">
                     <StackPanel Margin="20">
                         <TextBlock Text="Preferences" 
-                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                 Margin="0,0,0,20"/>
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Margin="0,0,0,20"/>
 
+                        <!-- Theme -->
                         <ComboBox x:Name="ThemeComboBox"
-                                 materialDesign:HintAssist.Hint="Theme"
-                                 Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                                 Margin="0,0,0,15">
+                                  materialDesign:HintAssist.Hint="Theme"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Margin="0,0,0,15">
                             <ComboBoxItem Content="Light"/>
                             <ComboBoxItem Content="Dark"/>
                             <ComboBoxItem Content="System Default"/>
                         </ComboBox>
 
+                        <!-- Preferred Currency -->
                         <ComboBox x:Name="CurrencyComboBox"
-                                 materialDesign:HintAssist.Hint="Preferred Currency"
-                                 Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                                 Margin="0,0,0,15"/>
+                                  materialDesign:HintAssist.Hint="Preferred Currency"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  Margin="0,0,0,15"/>
 
+                        <!-- Enable Email Notifications -->
                         <CheckBox Content="Enable Email Notifications"
-                                 x:Name="EmailNotificationsCheckBox"
-                                 Style="{StaticResource MaterialDesignCheckBox}"
-                                 Margin="0,0,0,10"/>
+                                  x:Name="EmailNotificationsCheckBox"
+                                  Style="{StaticResource MaterialDesignCheckBox}"
+                                  Margin="0,0,0,10"/>
 
+                        <!-- Enable Push Notifications -->
                         <CheckBox Content="Enable Push Notifications"
-                                 x:Name="PushNotificationsCheckBox"
-                                 Style="{StaticResource MaterialDesignCheckBox}"/>
+                                  x:Name="PushNotificationsCheckBox"
+                                  Style="{StaticResource MaterialDesignCheckBox}"/>
                     </StackPanel>
                 </materialDesign:Card>
 
@@ -159,6 +169,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
+                    <!-- Delete Account Button -->
                     <Button Content="Delete Account"
                             Click="DeleteAccount_Click"
                             Style="{StaticResource MaterialDesignOutlinedButton}"
@@ -166,16 +177,18 @@
                             BorderBrush="Red"/>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <!-- Save Changes Button -->
                         <Button Content="Save Changes"
                                 Click="SaveSettings_Click"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 Margin="0,0,10,0"/>
 
+                        <!-- Logout Button -->
                         <Button Content="Logout"
                                 Click="Logout_Click"
-                            Style="{StaticResource MaterialDesignOutlinedButton}"
-                            Foreground="Red"
-                            BorderBrush="Red"/>
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Foreground="Red"
+                                BorderBrush="Red"/>
                     </StackPanel>
                 </Grid>
             </StackPanel>

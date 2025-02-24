@@ -16,16 +16,19 @@
                 <TextBlock Text="My Portfolios" FontSize="26" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <Separator Margin="0,10,0,10"/>
 
+                <!-- Total Value Display -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
                     <TextBlock Text="Total Value: " FontSize="16" FontWeight="Bold"/>
                     <TextBlock x:Name="TotalAllPortfoliosValueTxt" FontSize="16" FontWeight="Bold"/>
                 </StackPanel>
 
+                <!-- Total Percent Change Display -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock Text="Total Percent Change: " FontSize="16" FontWeight="Bold"/>
                     <TextBlock x:Name="TotalAllPortfoliosChangePercentTxt" FontSize="16" FontWeight="Bold"/>
                 </StackPanel>
 
+                <!-- Add Portfolio Button -->
                 <Button Content="+ Portfolio" Width="160" Height="45" Click="ShowAddPortfolioDialog" Margin="0,20,0,0"/>
             </StackPanel>
         </materialDesign:Card>
@@ -37,26 +40,31 @@
                     <DataTemplate>
                         <materialDesign:Card Padding="10" Margin="5">
                             <StackPanel>
+                                <!-- Portfolio Name -->
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Portfolio Name: " FontSize="18" FontWeight="Bold"/>
                                     <TextBlock Text="{Binding PortfolioName}" FontSize="18" FontWeight="Bold"/>
                                 </StackPanel>
                                 
+                                <!-- Portfolio Description -->
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Portfolio Description: " FontSize="18" FontWeight="Bold"/>
                                     <TextBlock Text="{Binding Description}" FontSize="18" FontWeight="Bold"/>
                                 </StackPanel>
 
+                                <!-- Total Value -->
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Total Value: " FontSize="18" FontWeight="Bold"/>
                                     <TextBlock Text="{Binding TotalValue, StringFormat=C}" FontSize="18" FontWeight="Bold" Foreground="{Binding TotalValueColor}"/>
                                 </StackPanel>
 
+                                <!-- Total Percent Change -->
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Total Percent Change: " FontSize="18" FontWeight="Bold"/>
                                     <TextBlock Text="{Binding TotalPercenTChange, StringFormat=P2}" FontSize="18" FontWeight="Bold" Foreground="{Binding TotalPercentChangeColor}"/>
                                 </StackPanel>
 
+                                <!-- Access and Delete Buttons -->
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Content="📊 Access" Click="AccessPortfolio_Click"/>
                                     <Button Content="❌ Delete" Click="DeletePortfolio_Click" Background="Red" Foreground="White"/>
@@ -67,7 +75,6 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-
 
         <!-- Add Portfolio Dialog -->
         <materialDesign:DialogHost x:Name="AddPortfolioDialogHost">

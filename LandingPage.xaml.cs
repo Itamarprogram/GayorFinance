@@ -15,14 +15,21 @@ namespace GayorFinance
 {
     public partial class LandingPage : Page
     {
+        // API client for fetching stock data
         public readonly ApiClient _apiClient;
+        // List to store all stock quotes
         private List<StockQuote> _allStocks = new List<StockQuote>();
+        // Current user information
         public User currentUser;
+        // Total value of all portfolios
         private double TotalAllPortfoliosValue { get; set; }
+        // Total percentage change of all portfolios
         private double TotalAllPortfoliosChangePercent { get; set; }
 
+        // List of chosen stock symbols
         List<String> Chosen_stocks = new List<string> { "AAPL", "GOOGL", "AMZN", "MSFT", "TSLA", "NVDA", "META", "CRWD", "NET", "PANW", "AVGO", "JPM", "WMT", "ORCL", "DIS", "MS", "V", "NFLX" };
 
+        // Constructor to initialize the LandingPage
         public LandingPage(ApiClient apiClient)
         {
             InitializeComponent();
@@ -34,12 +41,14 @@ namespace GayorFinance
             LoadMarketOverview();
         }
 
+        // Initialize event handlers for UI elements
         private void InitializeEventHandlers()
         {
             MarketOverviewList.PreviewMouseLeftButtonUp += MarketOverviewList_PreviewMouseLeftButtonUp;
             SearchTextBox.KeyDown += SearchTextBox_KeyDown;
         }
 
+        // Load market overview data
         private async void LoadMarketOverview()
         {
             try
@@ -66,6 +75,7 @@ namespace GayorFinance
             }
         }
 
+        // Load portfolios data
         private async void LoadPortfolios()
         {
             try
@@ -123,6 +133,7 @@ namespace GayorFinance
             }
         }
 
+        // Find all portfolios by user ID
         private async Task<List<Portfolio>> FindAllPortfoliosByUserId(int userId)
         {
             try
@@ -138,6 +149,7 @@ namespace GayorFinance
             }
         }
 
+        // Handle mouse click on market overview list
         private void MarketOverviewList_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             var element = e.OriginalSource as FrameworkElement;
@@ -153,6 +165,7 @@ namespace GayorFinance
             }
         }
 
+        // Handle key down event for search text box
         private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -161,6 +174,7 @@ namespace GayorFinance
             }
         }
 
+        // Handle search button click
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             string searchText = SearchTextBox.Text?.Trim();
@@ -172,6 +186,7 @@ namespace GayorFinance
             }
         }
 
+        // Handle delete portfolio button click
         private async void DeletePortfolio_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is PortfolioDisplay portfolioDisplay)
@@ -204,6 +219,7 @@ namespace GayorFinance
             }
         }
 
+        // Handle add portfolio button click
         private async void AddPortfolio(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(PortfolioNameTextBox.Text))
@@ -244,6 +260,7 @@ namespace GayorFinance
             }
         }
 
+        // Close add portfolio dialog
         private void CloseAddPortfolioDialog(object sender, RoutedEventArgs e)
         {
             AddPortfolioDialogHost.IsOpen = false;
@@ -251,11 +268,13 @@ namespace GayorFinance
             PortfolioDescriptionTextBox.Text = string.Empty;
         }
 
+        // Show add portfolio dialog
         private void ShowAddPortfolioDialog(object sender, RoutedEventArgs e)
         {
             AddPortfolioDialogHost.IsOpen = true;
         }
 
+        // Handle access portfolio button click
         private void AccessPortfolio_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is PortfolioDisplay portfolioDisplay)
@@ -265,12 +284,14 @@ namespace GayorFinance
             }
         }
 
+        // Handle settings button click
         private void SettingsClick(object sender, RoutedEventArgs e)
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.NavigateToSettingsPage();
         }
 
+        // Handle market news button click
         private void MarketNewsClick(object sender, RoutedEventArgs e)
         {
             // Implement market news navigation

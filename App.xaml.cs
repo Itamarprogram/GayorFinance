@@ -9,23 +9,23 @@ namespace GayorFinance
 {
     public partial class App : Application
     {
-        private IServiceProvider _serviceProvider;
+        private IServiceProvider _serviceProvider; // Field to hold the service provider
 
         public App()
         {
-            var services = new ServiceCollection();
-            ConfigureServices(services);
-            _serviceProvider = services.BuildServiceProvider();
+            var services = new ServiceCollection(); // Create a new service collection
+            ConfigureServices(services); // Configure services
+            _serviceProvider = services.BuildServiceProvider(); // Build the service provider
         }
 
         private void ConfigureServices(IServiceCollection services)
         {
-            //  Added this line to create the http client, with the necessary configurations
+            // Add an HttpClient for the ApiClient with the necessary configurations
             services.AddHttpClient<ApiClient>(client =>
             {
                 client.BaseAddress = new Uri("https://lkcqjx2v-5221.euw.devtunnels.ms"); // Replace with your API base URL
             });
-            //  This line is still required to make the DI work correctly
+            // Add MainWindow as a singleton service
             services.AddSingleton<MainWindow>();
         }
 
@@ -33,8 +33,8 @@ namespace GayorFinance
         {
             base.OnStartup(e);
 
-            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-            mainWindow.Show();
+            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>(); // Get the MainWindow instance from the service provider
+            mainWindow.Show(); // Show the main window
         }
     }
 }

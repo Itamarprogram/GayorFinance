@@ -11,11 +11,14 @@ namespace GayorFinance.Services
     public class ApiClient
     {
         private readonly HttpClient _httpClient;
+
+        // Constructor to initialize the HttpClient
         public ApiClient(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
+        // Method to get the stock quote for a given symbol
         public async Task<StockQuote> GetStockQuote(string symbol)
         {
             try
@@ -37,9 +40,9 @@ namespace GayorFinance.Services
             }
         }
 
+        // Method to get the historical stock data for a given symbol
         public async Task<HistoricalDataResponse> GetStockQuoteHistoricalData(string symbol)
         {
-
             try
             {
                 // The call to our API that will return the historical stock data based on our specified symbol
@@ -59,6 +62,7 @@ namespace GayorFinance.Services
             }
         }
 
+        // Method to get today's intraday stock data for a given symbol
         public async Task<List<HistoricalIntraDayQuote>> GetStockQouteTodayData(string symbol)
         {
             try
@@ -66,7 +70,7 @@ namespace GayorFinance.Services
                 // The call to our API that will return the historical stock data based on our specified symbol
                 HttpResponseMessage response = await _httpClient.GetAsync($"/api/Finance/GetStockQuoteToday/stock/quote/Today/{symbol}");
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<List<HistoricalIntraDayQuote>>(); // Changed this line
+                return await response.Content.ReadFromJsonAsync<List<HistoricalIntraDayQuote>>();
             }
             catch (HttpRequestException ex)
             {
@@ -80,15 +84,15 @@ namespace GayorFinance.Services
             }
         }
 
+        // Method to get the last five days' intraday stock data for a given symbol
         public async Task<List<HistoricalIntraDayQuote>> GetStockQouteFiveDaysData(string symbol)
         {
-
             try
             {
                 // The call to our API that will return the historical stock data based on our specified symbol
                 HttpResponseMessage response = await _httpClient.GetAsync($"/api/Finance/GetStockQuoteFiveDays/stock/quote/FiveDays/{symbol}");
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<List<HistoricalIntraDayQuote>>(); // Changed this line
+                return await response.Content.ReadFromJsonAsync<List<HistoricalIntraDayQuote>>();
             }
             catch (HttpRequestException ex)
             {
@@ -101,9 +105,10 @@ namespace GayorFinance.Services
                 throw new Exception($"An unknown error occurred with message {ex.Message}", ex);
             }
         }
+
+        // Method to get the historical stock data for a given symbol within a date range
         public async Task<HistoricalDataResponse> GetStockQuoteHistoricalDataFromADate(string symbol, string StartDate, string EndDate)
         {
-
             try
             {
                 // The call to our API that will return the historical stock data based on our specified symbol
@@ -114,7 +119,7 @@ namespace GayorFinance.Services
             catch (HttpRequestException ex)
             {
                 // Handle communication errors (e.g., server not found, timeout)
-             throw new HttpRequestException($"Error connecting to server: {ex.Message}", ex);
+                throw new HttpRequestException($"Error connecting to server: {ex.Message}", ex);
             }
             catch (Exception ex)
             {

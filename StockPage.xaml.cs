@@ -27,6 +27,7 @@ namespace GayorFinance
         public Func<double, string> YFormatter { get; set; }
         public LiveCharts.Wpf.Separator Separator { get; set; }
 
+        // Constructor to initialize the StockPage with a symbol and ApiClient
         public StockPage(string symbol, ApiClient apiClient)
         {
             InitializeComponent();
@@ -39,27 +40,28 @@ namespace GayorFinance
             LoadStockDataAsync(symbol, "1Y");
         }
 
+        // Initialize chart properties for displaying stock data
         private void InitializeChartProperties()
         {
             SeriesCollection = new SeriesCollection
-            {
-                new LineSeries
                 {
-                    Title = "Stock Price",
-                    Values = new ChartValues<double>(),
-                    PointGeometry = null,
-                    StrokeThickness = 2,
-                    LineSmoothness = 0,
-                    Fill = Brushes.Transparent,
-                    DataLabels = false
-                }
-            };
+                    new LineSeries
+                    {
+                        Title = "Stock Price",
+                        Values = new ChartValues<double>(),
+                        PointGeometry = null,
+                        StrokeThickness = 2,
+                        LineSmoothness = 0,
+                        Fill = Brushes.Transparent,
+                        DataLabels = false
+                    }
+                };
 
             YFormatter = value => $"${value:F2}";
             Separator = new LiveCharts.Wpf.Separator { Step = 1, IsEnabled = true };
         }
 
-
+        // Load stock data asynchronously based on the given timeframe
         private async Task LoadStockDataAsync(string symbol, string timeframe)
         {
             try
@@ -92,7 +94,6 @@ namespace GayorFinance
 
                         break;
                     case "5D":
-
                         if (_cachedFiveDayData == null)
                         {
                             // Fetch and cache 5-day hourly data (intraday)
@@ -142,8 +143,7 @@ namespace GayorFinance
                         }
 
                         break;
-                    case "1D":  
-
+                    case "1D":
                         if (_cachedOneDayData == null)
                         {
                             // Fetch and cache 1-day intraday data
@@ -174,7 +174,6 @@ namespace GayorFinance
                             }
                         }
 
-
                         // Ensure that _cachedOneDayData is not null
                         if (_cachedOneDayData.Any())
                         {
@@ -185,8 +184,6 @@ namespace GayorFinance
                                 Date = quote.Date.ToString("yyyy-MM-dd"),
                                 Close = quote.Close,
                             }).ToList(), timeframe);
-
-
                         }
                         else
                         {
@@ -194,7 +191,6 @@ namespace GayorFinance
                             ChangeFromStart.Text = "No data available";
                             ChangeFromStart.Foreground = Brushes.Black;
                         }
-
 
                         break;
                 }
@@ -208,6 +204,8 @@ namespace GayorFinance
                 LoadingOverlay.Visibility = Visibility.Collapsed;
             }
         }
+
+        // Update stock information on the UI
         private void UpdateStockInfo(StockQuote quote)
         {
             Symbol.Text = quote.Symbol;
@@ -232,6 +230,7 @@ namespace GayorFinance
             }
         }
 
+        // Update the chart with historical data
         private void UpdateChart(List<HistoricalQuote> historicalQuotes, string timeframe)
         {
             if (historicalQuotes == null || historicalQuotes.Count == 0)
@@ -267,7 +266,6 @@ namespace GayorFinance
             SeriesCollection[0].Values = values;
             Labels = labels.ToArray();
 
-
             // Tooltips display additional information
             SeriesCollection[0].LabelPoint = chartPoint =>
             {
@@ -287,10 +285,9 @@ namespace GayorFinance
             DataContext = this;
         }
 
-
+        // Update the chart with intraday data
         private void UpdateIntraDayChart(List<HistoricalIntraDayQuote> intraDayQuotes, string timeframe)
         {
-
             var values = new ChartValues<double>();
             var labels = new List<string>();
             int labelStep = DetermineLabelStep(intraDayQuotes.Count, timeframe);
@@ -318,7 +315,6 @@ namespace GayorFinance
                 {
                     labels.Add(""); // Empty spacing for labels
                 }
-
             }
 
             SeriesCollection[0].Values = values;
@@ -335,17 +331,15 @@ namespace GayorFinance
                  ? (dataPoint.Close - intraDayQuotes[index - 1].Close) / intraDayQuotes[index - 1].Close * 100
                  : 0;
 
-
                 return $"Date: {dataPoint.Date:g}\nPrice: {dataPoint.Close:F2}ִ$\nChange: {(index > 0 ? dataPoint.Close - intraDayQuotes[index - 1].Close : 0):F2}\nChange: {(index > 0 && intraDayQuotes[index - 1].Close != 0 ? changesPercentage : 0):F2}%";
             };
-
 
             // Refresh bindings
             DataContext = null;
             DataContext = this;
         }
 
-
+        // Determine the step for labels on the X-axis based on the timeframe
         private int DetermineLabelStep(int dataCount, string timeframe)
         {
             return timeframe switch
@@ -358,6 +352,8 @@ namespace GayorFinance
                 _ => 1
             };
         }
+
+        // Filter historical data based on the given timeframe
         private List<HistoricalQuote> FilterHistoricalData(List<HistoricalQuote> historicalData, string timeframe)
         {
             if (historicalData == null || !historicalData.Any())
@@ -376,6 +372,7 @@ namespace GayorFinance
             };
         }
 
+        // Downsample data to a target number of points for performance
         private List<HistoricalQuote> DownsampleData(List<HistoricalQuote> data, int targetPoints)
         {
             if (data.Count <= targetPoints) return data;
@@ -391,7 +388,7 @@ namespace GayorFinance
             return downsampled;
         }
 
-
+        // Display the change in stock price over the selected period
         private void DisplayPeriodChange(List<HistoricalQuote> historicalQuotes, string timeframe)
         {
             if (historicalQuotes == null || historicalQuotes.Count < 2)
@@ -401,7 +398,6 @@ namespace GayorFinance
                 return;
             }
 
-
             var start = historicalQuotes.First();
             var end = historicalQuotes.Last();
             double priceChange = end.Close - start.Close;
@@ -409,9 +405,9 @@ namespace GayorFinance
 
             ChangeFromStart.Text = $"Change: {priceChange:+0.00;-0.00;0.00} ({(start.Close != 0 ? percentageChange / 100 : 0):+0.00%;-0.00%;0.00%})";
             ChangeFromStart.Foreground = priceChange >= 0 ? Brushes.Green : Brushes.Red;
-
         }
 
+        // Event handler for timeframe button clicks
         private async void TimeframeButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button)
@@ -420,15 +416,17 @@ namespace GayorFinance
                 await LoadStockDataAsync(_symbol, timeframe);
             }
         }
+
+        // Clear the chart data
         private void ClearChart()
         {
             SeriesCollection[0].Values.Clear();
             Labels = new string[0];
             DataContext = null;
             DataContext = this;
-
         }
 
+        // Navigate back to the landing page
         private void NavigateBack_Click(object sender, RoutedEventArgs e)
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;

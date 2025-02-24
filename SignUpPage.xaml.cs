@@ -16,11 +16,14 @@ namespace GayorFinance
 {
     public partial class SignUpPage : Page, INotifyPropertyChanged
     {
+        // Observable collection to hold the list of countries
         public ObservableCollection<Countries> CountryList { get; set; }
+        // List to hold country objects
         public List<Countries> CountryObjectList { get; set; }
+        // Action to be invoked on successful sign-up
         public Action OnSignUpSuccess { get; set; }
 
-        // Add new properties for enhanced features
+        // Property to track the current step in the sign-up process
         private int _currentStep = 1;
         public int CurrentStep
         {
@@ -34,6 +37,7 @@ namespace GayorFinance
             }
         }
 
+        // Property to track the password strength
         private int _passwordStrength;
         public int PasswordStrength
         {
@@ -46,6 +50,7 @@ namespace GayorFinance
             }
         }
 
+        // Property to get the color based on password strength
         public Brush PasswordStrengthColor
         {
             get
@@ -60,6 +65,7 @@ namespace GayorFinance
             }
         }
 
+        // Property to track if the password is visible
         private bool _isPasswordVisible;
         public bool IsPasswordVisible
         {
@@ -72,13 +78,16 @@ namespace GayorFinance
             }
         }
 
+        // Event to notify when a property changes
         public event PropertyChangedEventHandler PropertyChanged;
 
+        // Method to raise the PropertyChanged event
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        // Constructor to initialize the SignUpPage
         public SignUpPage()
         {
             InitializeComponent();
@@ -90,6 +99,7 @@ namespace GayorFinance
             UpdateStepUI();
         }
 
+        // Method to update the visibility of the password
         private void UpdatePasswordVisibility()
         {
             if (IsPasswordVisible)
@@ -106,6 +116,7 @@ namespace GayorFinance
             }
         }
 
+        // Method to update the password strength
         private void UpdatePasswordStrength()
         {
             string password = IsPasswordVisible ? VisiblePasswordBox.Text : PasswordTextBox.Password;
@@ -119,6 +130,7 @@ namespace GayorFinance
             PasswordStrength = strength;
         }
 
+        // Method to update the visibility of the steps
         private void UpdateStepVisibility()
         {
             Step1Panel.Visibility = CurrentStep == 1 ? Visibility.Visible : Visibility.Collapsed;
@@ -127,11 +139,13 @@ namespace GayorFinance
             Step4Panel.Visibility = CurrentStep == 4 ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        // Method to update the navigation buttons
         private void UpdateNavigationButtons()
         {
             NextButton.Content = CurrentStep == 4 ? "Sign Up" : "Next";
         }
 
+        // Method to validate the current step
         private bool ValidateCurrentStep()
         {
             switch (CurrentStep)
@@ -152,7 +166,7 @@ namespace GayorFinance
             }
         }
 
-        // Fixed: Removed the extraneous 's' after the parameters.
+        // Event handler for the Next button click
         private void NextStep_Click(object sender, RoutedEventArgs e)
         {
             if (_currentStep < 4)
@@ -162,6 +176,7 @@ namespace GayorFinance
             }
         }
 
+        // Event handler for the Previous button click
         private void PreviousStep_Click(object sender, RoutedEventArgs e)
         {
             if (_currentStep > 1)
@@ -171,6 +186,7 @@ namespace GayorFinance
             }
         }
 
+        // Method to update the UI for the current step
         private void UpdateStepUI()
         {
             // Reset all step indicators to default
@@ -192,11 +208,13 @@ namespace GayorFinance
             Step4Panel.Visibility = _currentStep == 4 ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        // Event handler to toggle password visibility
         private void TogglePasswordVisibility_Click(object sender, RoutedEventArgs e)
         {
             IsPasswordVisible = !IsPasswordVisible;
         }
 
+        // Method to show success animation
         private async void ShowSuccessAnimation()
         {
             SuccessIcon.Visibility = Visibility.Visible;
@@ -215,11 +233,13 @@ namespace GayorFinance
             OnSignUpSuccess?.Invoke();
         }
 
+        // Method to load countries asynchronously
         private async void LoadCountriesAsync()
         {
             await GetAllCountries();
         }
 
+        // Method to get all countries from the API
         private async Task GetAllCountries()
         {
             try
@@ -239,6 +259,7 @@ namespace GayorFinance
             }
         }
 
+        // Method to insert a new user into the database
         private async Task InsertSignUpUser(User user)
         {
             try
@@ -260,6 +281,7 @@ namespace GayorFinance
             }
         }
 
+        // Event handler for the Sign Up button click
         private async void SignUpButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -327,6 +349,7 @@ namespace GayorFinance
             return Regex.IsMatch(email, emailPattern);
         }
 
+        // Helper method to validate password
         public bool IsValidPassword(string password)
         {
             if (string.IsNullOrWhiteSpace(password))
@@ -337,6 +360,7 @@ namespace GayorFinance
             return Regex.IsMatch(password, passwordPattern);
         }
 
+        // Method to check for email duplicates
         public async Task<bool> CheckForEmailDuplicate(string email)
         {
             try
@@ -357,6 +381,7 @@ namespace GayorFinance
             return false;
         }
 
+        // Event handler to navigate to the sign-in page
         private void GoToSignInButton_Click(object sender, RoutedEventArgs e)
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;

@@ -13,20 +13,27 @@ namespace GayorFinance
 {
     public partial class UserPortfolios : Page
     {
+        // Current user of the application
         public User currentUser;
+        // API client for making HTTP requests
         private readonly ApiClient _apiClient;
+        // Total value of all portfolios
         private double TotalAllPortfoliosValue { get; set; }
+        // Total percentage change of all portfolios
         private double TotalAllPortfoliosChangePercent { get; set; }
 
+        // Constructor to initialize the page with the API client
         public UserPortfolios(ApiClient apiClient)
         {
             InitializeComponent();
             currentUser = UserSession.Instance.CurrentUser;
             _apiClient = apiClient;
 
+            // Load portfolios when the page is initialized
             LoadPortfolios();
         }
 
+        // Method to load portfolios for the current user
         private async void LoadPortfolios()
         {
             try
@@ -39,6 +46,7 @@ namespace GayorFinance
                 TotalAllPortfoliosValue = 0;
                 TotalAllPortfoliosChangePercent = 0;
 
+                // Iterate through each portfolio and calculate values
                 foreach (var portfolio in portfolios)
                 {
                     List<PortfolioStocks> stocks = await apiService.GetPortfoliosStocks();
@@ -77,8 +85,7 @@ namespace GayorFinance
             }
         }
 
-
-
+        // Method to find all portfolios by user ID
         private async Task<List<Portfolio>> FindAllPortfoliosByUserId(int userId)
         {
             try
@@ -94,6 +101,7 @@ namespace GayorFinance
             }
         }
 
+        // Event handler for deleting a portfolio
         private async void DeletePortfolio_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is PortfolioDisplay portfolioDisplay)
@@ -101,7 +109,7 @@ namespace GayorFinance
                 try
                 {
                     ApiService apiService = new ApiService();
-                    int isDeleted = await apiService.DeletePortfolio(portfolioDisplay.OriginalPortoflio.Id);  
+                    int isDeleted = await apiService.DeletePortfolio(portfolioDisplay.OriginalPortoflio.Id);
 
                     if (isDeleted == 1)
                     {
@@ -120,9 +128,7 @@ namespace GayorFinance
             }
         }
 
-
-
-
+        // Event handler for adding a new portfolio
         private async void AddPortfolio(object sender, RoutedEventArgs e)
         {
             try
@@ -154,16 +160,19 @@ namespace GayorFinance
             }
         }
 
+        // Event handler to close the add portfolio dialog
         private void CloseAddPortfolioDialog(object sender, RoutedEventArgs e)
         {
             AddPortfolioDialogHost.IsOpen = false;
         }
 
+        // Event handler to show the add portfolio dialog
         private void ShowAddPortfolioDialog(object sender, RoutedEventArgs e)
         {
             AddPortfolioDialogHost.IsOpen = true;
         }
 
+        // Event handler to access a specific portfolio
         private void AccessPortfolio_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is PortfolioDisplay portfolioDisplay)
@@ -172,7 +181,5 @@ namespace GayorFinance
                 mainWindow.NavigateTPortfolioPage(portfolioDisplay.OriginalPortoflio);
             }
         }
-
-
     }
 }

@@ -6,6 +6,7 @@
       Title="LandingPage">
 
     <Grid>
+        <!-- Background Gradient -->
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                 <GradientStop Color="#F5F7FA" Offset="0"/>
@@ -13,6 +14,7 @@
             </LinearGradientBrush>
         </Grid.Background>
 
+        <!-- Grid Row Definitions -->
         <Grid.RowDefinitions>
             <RowDefinition Height="64"/>
             <RowDefinition Height="Auto"/>

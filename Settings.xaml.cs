@@ -23,23 +23,31 @@ namespace GayorFinance
     /// </summary>
     public partial class Settings : Page
     {
+        // Current user object
         public User currentUser;
+        // Observable collection of countries for data binding
         public ObservableCollection<Countries> CountryList { get; set; }
+        // List of country objects
         public List<Countries> CountryObjectList { get; set; }
 
+        // Constructor
         public Settings()
         {
             InitializeComponent();
+            // Get the current user from the session
             currentUser = UserSession.Instance.CurrentUser;
+            // Set the data context for data binding
             DataContext = this;
+            // Initialize the country list
             CountryList = new ObservableCollection<Countries>();
+            // Load countries asynchronously
             LoadCountriesAsync();
-
-
         }
 
+        // Load user details into the UI
         private void LoadUser()
         {
+            // Display user details
             NameDisplay.Text = $"{currentUser.FirstName} {currentUser.LastName}";
             UserEmailDisplay.Text = $"{currentUser.Email}";
             FirstNameTextBox.Text = currentUser.FirstName;
@@ -47,39 +55,45 @@ namespace GayorFinance
             EmailTextBox.Text = currentUser.Email;
             DateOfBirthPicker.SelectedDate = currentUser.DateOfBirth;
 
+            // Set the selected country in the combo box
             CountryComboBox.SelectedItem = CountryList.FirstOrDefault(c => c.CountryName == currentUser.Country.CountryName);
-
-
         }
 
+        // Load countries asynchronously and then load user details
         private async void LoadCountriesAsync()
         {
             await GetAllCountries();
-
             LoadUser();
         }
 
+        // Get all countries from the API
         private async Task GetAllCountries()
         {
             try
             {
                 ApiService apiService = new ApiService();
+                // Fetch countries from the API
                 CountryObjectList = await apiService.GetCountries();
+                // Clear the existing country list
                 CountryList.Clear();
+                // Add fetched countries to the observable collection
                 foreach (var country in CountryObjectList)
                 {
-                    // Adding the entire country object to preserve all properties
                     CountryList.Add(country);
                 }
             }
             catch (Exception ex)
             {
+                // Show error message if fetching countries fails
                 MessageBox.Show("Error loading countries: " + ex.Message);
             }
         }
+
+        // Save updated user settings
         private async Task SaveSettings(User UpdatedUser)
         {
             ApiService apiService = new ApiService();
+            // Update user via the API
             int isUpdated = await apiService.UpdateUser(UpdatedUser);
             if (isUpdated == 1)
             {
@@ -89,14 +103,15 @@ namespace GayorFinance
             {
                 MessageBox.Show("User update failed!");
             }
-
         }
 
+        // Event handler for save settings button click
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
             string NewPassword = "";
             try
-            {                // Check if all fields are filled
+            {
+                // Check if all fields are filled
                 if (string.IsNullOrWhiteSpace(FirstNameTextBox.Text) ||
                     string.IsNullOrWhiteSpace(LastNameTextBox.Text) ||
                     string.IsNullOrWhiteSpace(EmailTextBox.Text) ||
@@ -107,9 +122,11 @@ namespace GayorFinance
                     return;
                 }
 
+                // Validate current password
                 if (CheckForPasswordValid(CurrentPasswordBox.Password))
                 {
-                    if(NewPasswordBox.Password != ConfirmPasswordBox.Password)
+                    // Check if new passwords match
+                    if (NewPasswordBox.Password != ConfirmPasswordBox.Password)
                     {
                         MessageBox.Show("Passwords do not match!");
                         return;
@@ -121,25 +138,23 @@ namespace GayorFinance
                     MessageBox.Show("Password is incorrect!");
                 }
 
-
                 SignUpPage signUpPage = new SignUpPage();
-                //if (await signUpPage.CheckForEmailDuplicate(EmailTextBox.Text))
-                //{
-                //    MessageBox.Show("Email already exists!");
-                //    return;
-                //}
 
+                // Validate email format
                 if (!signUpPage.IsValidEmail(EmailTextBox.Text))
                 {
                     MessageBox.Show("Please enter a valid email address.");
                     return;
                 }
 
+                // Validate new password format
                 if (!signUpPage.IsValidPassword(NewPassword))
                 {
                     MessageBox.Show("Password must be at least 8 characters long, include at least one uppercase letter and one special character.");
                     return;
                 }
+
+                // Create updated user object
                 User UpdatedUser = new User
                 {
                     Id = currentUser.Id,
@@ -150,44 +165,56 @@ namespace GayorFinance
                     DateOfBirth = DateOfBirthPicker.SelectedDate.Value,
                     Country = (Countries)CountryComboBox.SelectedItem
                 };
+
+                // Save updated user settings
                 await SaveSettings(UpdatedUser);
+                // Update user session
                 UserSession.Instance.SetUser(UpdatedUser);
-
-
             }
             catch (Exception ex)
             {
+                // Show error message if updating user fails
                 MessageBox.Show("Error updating user: " + ex.Message);
             }
-
         }
 
+        // Validate current password
         private bool CheckForPasswordValid(String CurrentPasswordBox)
         {
-            if(CurrentPasswordBox != currentUser.Password)
+            if (CurrentPasswordBox != currentUser.Password)
             {
                 return false;
             }
             return true;
         }
+
+        // Event handler for logout button click
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
+            // Clear user session
             UserSession.Instance.SetUser(null);
+            // Navigate to sign-in page
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.NavigateToSignIn();
-
         }
 
+        // Event handler for delete account button click
         private async void DeleteAccount_Click(object sender, RoutedEventArgs e)
         {
             ApiService apiService = new ApiService();
+            // Delete user via the API
             await apiService.DeleteUser(currentUser.Id);
+            // Clear user session
             UserSession.Instance.SetUser(null);
+            // Navigate to sign-in page
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.NavigateToSignIn();
         }
+
+        // Event handler for navigate back button click
         private void NavigateBack_Click(object sender, RoutedEventArgs e)
         {
+            // Navigate to landing page
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.NavigateToLandingPage();
         }
