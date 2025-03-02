@@ -167,12 +167,74 @@ namespace GayorFinance
         }
 
         // Event handler for the Next button click
-        private void NextStep_Click(object sender, RoutedEventArgs e)
+        private async void NextStep_Click(object sender, RoutedEventArgs e)
         {
             if (_currentStep < 4)
             {
                 _currentStep++;
                 UpdateStepUI();
+            }
+            else if (_currentStep == 4)
+            {
+                // This is the final step, so perform sign-up instead of moving to step 5
+                await SignUpUser();
+            }
+        }
+        // New method to handle the sign-up process
+        private async Task SignUpUser()
+        {
+            try
+            {
+                // Check if all fields are filled
+                if (string.IsNullOrWhiteSpace(FirstNameTextBox.Text) ||
+                    string.IsNullOrWhiteSpace(LastNameTextBox.Text) ||
+                    string.IsNullOrWhiteSpace(EmailTextBox.Text) ||
+                    string.IsNullOrWhiteSpace(PasswordTextBox.Password) ||
+                    !DateOfBirthPicker.SelectedDate.HasValue ||
+                    CountryComboBox.SelectedItem as Countries == null)
+                {
+                    MessageBox.Show("Please fill in all fields.");
+                    return;
+                }
+
+                if (await CheckForEmailDuplicate(EmailTextBox.Text))
+                {
+                    MessageBox.Show("Email already exists!");
+                    return;
+                }
+
+                // Validate email format
+                if (!IsValidEmail(EmailTextBox.Text))
+                {
+                    MessageBox.Show("Please enter a valid email address.");
+                    return;
+                }
+
+                if (!IsValidPassword(PasswordTextBox.Password))
+                {
+                    MessageBox.Show("Password must be at least 8 characters long, include at least one uppercase letter and one special character.");
+                    return;
+                }
+
+                Countries selectedCountry = CountryComboBox.SelectedItem as Countries;
+
+                // All validations passed, create the user object
+                User user = new User()
+                {
+                    FirstName = FirstNameTextBox.Text,
+                    LastName = LastNameTextBox.Text,
+                    Email = EmailTextBox.Text,
+                    Password = PasswordTextBox.Password,
+                    DateOfBirth = DateOfBirthPicker.SelectedDate.Value,
+                    Country = selectedCountry
+                };
+
+                await InsertSignUpUser(user);
+                ShowSuccessAnimation();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred: " + ex.Message);
             }
         }
 
@@ -387,5 +449,7 @@ namespace GayorFinance
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.NavigateToSignIn();
         }
+
+
     }
 }

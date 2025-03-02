@@ -448,6 +448,11 @@ using ViewModel;
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.NavigateToLandingPage();
         }
+
+        private void ViewDetails(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
     }
 
